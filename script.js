@@ -171,6 +171,7 @@ async function initOrtuPage() {
   document.getElementById("profilNisn").textContent = ortuData.NISN;
   document.getElementById("profilKelas").textContent = ortuData.Kelas_Reguler;
   document.getElementById("profilHalaqah").textContent = ortuData.Kelompok_Tahfizh;
+  document.getElementById("profilWaliKelas").textContent = ortuData.Wali_Kelas;
 
   // Setup Tab Navigasi Riwayat
   const tabBtns = document.querySelectorAll(".tab-btn");
