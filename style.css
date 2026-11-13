@@ -1,0 +1,318 @@
+:root {
+  /* Warna Utama (Navbar & Tombol) */
+  --primary: #2D4354; /* Biru Slate dari palet gambar */
+  --primary-dark: #20212B; /* Charcoal/Hitam untuk efek klik/sorot */
+  
+  /* Warna Aksen (Tab Aktif, Ikon & Garis Tepi) */
+  --secondary: #9E6752; /* Cokelat Terakota */
+  
+  /* Warna Latar & Kotak */
+  --bg: #FED7A5; /* Krem Persik (Sangat lembut untuk latar belakang web) */
+  --card: #ffffff; /* Putih bersih untuk kotak login agar kontras */
+  
+  /* Warna Teks & Garis (Elemen Tipografi) */
+  --text: #534145; /* Cokelat Tua Ungu untuk teks utama agar elegan */
+  --muted: #73766A; /* Abu-abu Kehijauan untuk teks sekunder */
+  --border: #cbd5e1;
+  
+  /* Warna Status (Tetap menggunakan standar UI) */
+  --danger: #ef4444; 
+  --success: #10b981;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: var(--text);
+  line-height: 1.5;
+  padding-bottom: 40px;
+}
+
+.navbar {
+  background-color: var(--primary);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.navbar h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.auth-wrapper {
+  max-width: 440px;
+  margin: 3.5rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--primary-dark);
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: var(--muted);
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.tab-btn.active {
+  background: var(--secondary);
+  color: var(--primary-dark);
+  border-color: var(--secondary);
+  font-weight: 700;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--text);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+/* Profile Grid */
+.profile-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  background: #FFF9E6; /* Kuning sangat muda */
+  border: 1px solid var(--secondary);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.profile-item span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.profile-item strong {
+  font-size: 1rem;
+  color: var(--primary-dark);
+}
+
+/* Tables */
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success { background: #dcfce7; color: #166534; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
+
+.hidden {
+  display: none !important;
+}
+
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.alert-info { background: #e0f2fe; color: #075985; }
+.alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+.watermark {
+  position: fixed;
+  bottom: 15px;
+  right: 20px;
+  color: #ffffff; 
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 500;
+  z-index: 1000;
+  pointer-events: none; 
+  
+  /* Bayangan ditumpuk dari berbagai sisi (atas, bawah, kiri, kanan) + bayangan jatuh yang tebal */
+  text-shadow: 
+    1px 1px 2px #000000, 
+    -1px -1px 2px #000000, 
+    1px -1px 2px #000000, 
+    -1px 1px 2px #000000,
+    0px 4px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* =========================================
+   DESAIN HALAMAN LOGIN (Tengah Layar)
+========================================= */
+.split-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('gedung.jpg'); /* Gambar gedung sekolah penuh */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  /* Dua baris ini yang bertugas menarik kotak login persis ke tengah layar */
+  align-items: center;
+  justify-content: center;
+  padding: 20px; /* Jarak aman agar tidak menempel di tepi layar HP */
+}
+
+/* Sisi pembagi kita sembunyikan karena sudah tidak dipakai */
+.split-image {
+  display: none;
+}
+
+.split-form {
+  width: 100%;
+  /* 1. Ukuran diperlebar dari 480px menjadi 650px agar teks kutipan lebih lega */
+  max-width: 750px; 
+  padding: 40px;
+  border-radius: 16px; 
+  
+  /* 2. Opacity dinaikkan dari 0.85 menjadi 0.95 agar warna latar lebih padat/solid */
+  background: rgba(254, 215, 165, 0.65); 
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.split-form-inner {
+  width: 100%;
+}
+
+/* --- PENGATURAN RESPONSIF UNTUK HP --- */
+@media (max-width: 768px) {
+  .split-form {
+    padding: 30px 20px;
+    background: rgba(254, 215, 165, 0.95); /* Dibuat sedikit lebih pekat di layar HP agar teks tetap terbaca jelas */
+  }
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login SMPIT Sabilul Haq - EduSync</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="margin: 0; padding: 0;">
+
+  <!-- KERANGKA SPLIT SCREEN -->
+  <div class="split-layout">
+    
+    <!-- Sisi Kiri: Gambar Gedung/Ilustrasi -->
+    <!-- GANTI 'gedung.jpg' di bawah ini dengan nama file gambar Ibu yang sebenarnya -->
+    <div class="split-image" style="background-image: url('gedung.jpg');"></div>
+
+    <!-- Sisi Kanan: Area Login -->
+    <div class="split-form">
+      <div class="split-form-inner">
+        
+        <!-- Navigasi Logo dipindah ke sini agar rata tengah di atas kotak login -->
+        <nav class="navbar" style="display: flex; align-items: center; justify-content: center; padding: 15px; margin-bottom: 20px; background: transparent; box-shadow: none;">
+          <img src="Logo SMPIT PNG.png" alt="Logo SMPIT" style="height: 50px; margin-right: 15px;">
+          <h1 style="margin: 0; font-size: 24px; color: #1e293b;">EduSync - SMPIT Sabilul Haq</h1>
+        </nav>
+
+<!-- Nasihat Pendidikan (Hadits Keutamaan Mendidik Anak) -->
+<div style="text-align: center; margin-top: -10px; margin-bottom: 30px; padding: 0 15px;">
+ 
+  <!-- Terjemahan Bahasa Indonesia (Tebal/Bold) -->
+  <p style="font-style: italic; color: var(--primary-dark); font-size: 14px; font-weight: 600; line-height: 1.6; margin: 0;">
+    "Tiada suatu pemberian yang lebih utama dari orang tua kepada anaknya selain pendidikan yang baik."
+  </p>
+  
+  <!-- Sumber Kutipan -->
+  <span style="font-size: 12px; color: var(--secondary); font-weight: 700; display: block; margin-top: 8px;">
+    — HR. Al Hakim (7679)
+  </span>
+  
+</div>
+
+        <div class="auth-wrapper" style="margin-top: 0; padding: 0;">
+          <!-- BOX LOGIN UTAMA -->
+          <div id="boxLoginMain" class="card">
+            <div class="card-title" style="text-align: center;">Ahlan wa Sahlan - Selamat Datang</div>
+
+            <div class="tabs">
+              <button type="button" id="tabBtnOrtu" class="tab-btn active">Wali Murid</button>
+              <button type="button" id="tabBtnGuru" class="tab-btn">Guru / Asatidz</button>
+            </div>
+
+            <!-- Form Login Orang Tua -->
+            <form id="formLoginOrtu">
+              <div class="form-group">
+                <label for="ortuNisn">NISN Siswa</label>
+                <input type="text" id="ortuNisn" class="form-control" placeholder="Masukkan NISN" required>
+              </div>
+              <div class="form-group">
+                <label for="ortuPassword">Password</label>
+                <input type="password" id="ortuPassword" class="form-control" placeholder="Masukkan Password" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Masuk sebagai Orang Tua</button>
+            </form>
+
+            <!-- Form Login Guru -->
+            <form id="formLoginGuru" class="hidden">
+              <div class="form-group">
+                <label for="guruNiy">NIY (Nomor Induk Yayasan)</label>
+                <input type="text" id="guruNiy" class="form-control" placeholder="Masukkan NIY Guru" required>
+              </div>
+              <div class="form-group">
+                <label for="guruPassword">Password</label>
+                <input type="password" id="guruPassword" class="form-control" placeholder="Masukkan Password" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Masuk sebagai Guru</button>
+            </form>
+          </div>
+
+          <!-- BOX WAJIB RESET PASSWORD ORTU -->
+          <div id="boxResetPassword" class="card hidden">
+            <div class="card-title">Ubah Password Default</div>
+            <div class="alert alert-warning">
+              Anda masih menggunakan password standar sekolah. Demi keamanan data ananda, silakan buat password baru terlebih dahulu.
+            </div>
+            <form id="formResetPassword">
+              <div class="form-group">
+                <label for="newPassword">Password Baru</label>
+                <input type="password" id="newPassword" class="form-control" minlength="6" placeholder="Minimal 6 karakter" required>
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Ulangi Password Baru</label>
+                <input type="password" id="confirmPassword" class="form-control" minlength="6" placeholder="Ketik ulang password baru" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Simpan & Lanjutkan ke Dasbor</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <div class="watermark">Developed by Khairia Harli 2026</div>
+</body>
+</html>
