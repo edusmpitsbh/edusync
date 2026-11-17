@@ -253,8 +253,6 @@ th {
   font-weight: 500;
   z-index: 1000;
   pointer-events: none; 
-  
-  /* Bayangan ditumpuk dari berbagai sisi (atas, bawah, kiri, kanan) + bayangan jatuh yang tebal */
   text-shadow: 
     1px 1px 2px #000000, 
     -1px -1px 2px #000000, 
@@ -274,32 +272,24 @@ th {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  
-  /* Dua baris ini yang bertugas menarik kotak login persis ke tengah layar */
   align-items: center;
   justify-content: center;
-  padding: 20px; /* Jarak aman agar tidak menempel di tepi layar HP */
+  padding: 20px;
 }
 
-/* Sisi pembagi kita sembunyikan karena sudah tidak dipakai */
 .split-image {
   display: none;
 }
 
 .split-form {
   width: 100%;
-  /* 1. Ukuran diperlebar dari 480px menjadi 650px agar teks kutipan lebih lega */
   max-width: 750px; 
   padding: 40px;
   border-radius: 16px; 
-  
-  /* 2. Opacity dinaikkan dari 0.85 menjadi 0.95 agar warna latar lebih padat/solid */
   background: rgba(254, 215, 165, 0.65); 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -309,10 +299,33 @@ th {
   width: 100%;
 }
 
-/* --- PENGATURAN RESPONSIF UNTUK HP --- */
+/* =========================================
+   PENGATURAN RESPONSIF UNTUK HP
+========================================= */
 @media (max-width: 768px) {
+  /* 1. Latar kotak login dibuat lebih pekat agar teks jelas terbaca */
   .split-form {
     padding: 30px 20px;
-    background: rgba(254, 215, 165, 0.95); /* Dibuat sedikit lebih pekat di layar HP agar teks tetap terbaca jelas */
+    background: rgba(254, 215, 165, 0.95); 
+  }
+  
+  /* 2. Ukuran teks logo atas disusutkan agar tidak menabrak pinggir HP */
+  .navbar h1 {
+    font-size: 16px !important;
+  }
+  
+  /* 3. Tombol tab menu (Wali Murid / Guru) dibariskan ke bawah */
+  .tabs {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .tab-btn {
+    width: 100%;
+  }
+
+  /* 4. Tabel di Dasbor (Nilai, Kehadiran, dll) dibuat bisa di-swipe ke samping */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
