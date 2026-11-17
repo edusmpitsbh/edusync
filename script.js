@@ -408,33 +408,19 @@ function setupTabs() {
 ==================================================== */
 
 // Fungsi Login Wali Murid
-window.loginOrtu = async function(e) {
-  if (e && e.preventDefault) e.preventDefault(); // Mencegah halaman reload jika pakai form
-  
-  // Deteksi inputan (mencari ID nisn dan password)
-  const inputNisn = document.getElementById("nisn");
-  const inputPass = document.getElementById("password");
-  
-  if (!inputNisn || !inputPass) {
-    alert("Sistem tidak menemukan kotak input. Pastikan ID-nya 'nisn' dan 'password' di index.html");
-    return;
-  }
-
-  const nisn = inputNisn.value;
-  const password = inputPass.value;
+window.loginOrtu = async function() {
+  const nisn = document.getElementById("ortuNisn").value; // ID disesuaikan dengan HTML baru
+  const password = document.getElementById("ortuPassword").value; // ID disesuaikan dengan HTML baru
 
   if (!nisn || !password) {
     alert("NISN dan Password tidak boleh kosong!");
     return;
   }
 
-  // Efek tombol loading
-  const btn = document.activeElement; 
-  const originalText = btn ? btn.innerText : "Masuk";
-  if (btn && btn.tagName === "BUTTON") {
-    btn.innerText = "Memverifikasi...";
-    btn.disabled = true;
-  }
+  const btn = document.getElementById("btnLoginOrtu");
+  const originalText = btn.innerText;
+  btn.innerText = "Memverifikasi...";
+  btn.disabled = true;
 
   try {
     const response = await fetch(API_URL, {
@@ -444,47 +430,32 @@ window.loginOrtu = async function(e) {
     const res = await response.json();
     if (res.status === "success") {
       localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
-      window.location.href = "ortu.html"; // Berhasil masuk
+      window.location.href = "ortu.html"; 
     } else {
       alert(res.message);
     }
   } catch (err) {
-    alert("Gagal terhubung ke server. Pastikan link API_URL sudah benar.");
+    alert("Gagal terhubung ke server.");
   } finally {
-    if (btn && btn.tagName === "BUTTON") {
-      btn.innerText = originalText;
-      btn.disabled = false;
-    }
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 };
 
 // Fungsi Login Guru
-window.loginGuru = async function(e) {
-  if (e && e.preventDefault) e.preventDefault();
-  
-  // Mencari ID niy dan password guru
-  const inputNiy = document.getElementById("niy") || document.getElementById("niyGuru");
-  const inputPass = document.getElementById("passwordGuru") || document.getElementById("password");
-  
-  if (!inputNiy || !inputPass) {
-    alert("Sistem tidak menemukan kotak input NIY/Password di index.html");
-    return;
-  }
-
-  const niy = inputNiy.value;
-  const password = inputPass.value;
+window.loginGuru = async function() {
+  const niy = document.getElementById("guruNiy").value; // ID disesuaikan dengan HTML baru
+  const password = document.getElementById("guruPassword").value; // ID disesuaikan dengan HTML baru
 
   if (!niy || !password) {
     alert("NIY dan Password tidak boleh kosong!");
     return;
   }
 
-  const btn = document.activeElement;
-  const originalText = btn ? btn.innerText : "Masuk";
-  if (btn && btn.tagName === "BUTTON") {
-    btn.innerText = "Memverifikasi...";
-    btn.disabled = true;
-  }
+  const btn = document.getElementById("btnLoginGuru");
+  const originalText = btn.innerText;
+  btn.innerText = "Memverifikasi...";
+  btn.disabled = true;
 
   try {
     const response = await fetch(API_URL, {
@@ -494,17 +465,15 @@ window.loginGuru = async function(e) {
     const res = await response.json();
     if (res.status === "success") {
       localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
-      window.location.href = "guru.html"; // Berhasil masuk
+      window.location.href = "guru.html"; 
     } else {
       alert(res.message);
     }
   } catch (err) {
-    alert("Gagal terhubung ke server. Pastikan link API_URL sudah benar.");
+    alert("Gagal terhubung ke server.");
   } finally {
-    if (btn && btn.tagName === "BUTTON") {
-      btn.innerText = originalText;
-      btn.disabled = false;
-    }
+    btn.innerText = originalText;
+    btn.disabled = false;
   }
 };
 

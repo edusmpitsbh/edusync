@@ -12,46 +12,42 @@
   <div class="split-layout">
     
     <!-- Sisi Kiri: Gambar Gedung/Ilustrasi -->
-    <!-- GANTI 'gedung.jpg' di bawah ini dengan nama file gambar Ibu yang sebenarnya -->
     <div class="split-image" style="background-image: url('gedung.jpg');"></div>
 
     <!-- Sisi Kanan: Area Login -->
     <div class="split-form">
       <div class="split-form-inner">
         
-        <!-- Navigasi Logo dipindah ke sini agar rata tengah di atas kotak login -->
+        <!-- Navigasi Logo -->
         <nav class="navbar" style="display: flex; align-items: center; justify-content: center; padding: 15px; margin-bottom: 20px; background: transparent; box-shadow: none;">
           <img src="Logo SMPIT PNG.png" alt="Logo SMPIT" style="height: 50px; margin-right: 15px;">
           <h1 style="margin: 0; font-size: 24px; color: #1e293b;">EduSync - SMPIT Sabilul Haq</h1>
         </nav>
 
-<!-- Nasihat Pendidikan (Hadits Keutamaan Mendidik Anak) -->
-<div style="text-align: center; margin-top: -10px; margin-bottom: 30px; padding: 0 15px;">
- 
-  <!-- Terjemahan Bahasa Indonesia (Tebal/Bold) -->
-  <p style="font-style: italic; color: var(--primary-dark); font-size: 14px; font-weight: 600; line-height: 1.6; margin: 0;">
-    "Tiada suatu pemberian yang lebih utama dari orang tua kepada anaknya selain pendidikan yang baik."
-  </p>
-  
-  <!-- Sumber Kutipan -->
-  <span style="font-size: 12px; color: var(--secondary); font-weight: 700; display: block; margin-top: 8px;">
-    — HR. Al Hakim (7679)
-  </span>
-  
-</div>
+        <!-- Nasihat Pendidikan (Hadits Keutamaan Mendidik Anak) -->
+        <div style="text-align: center; margin-top: -10px; margin-bottom: 30px; padding: 0 15px;">
+          <p style="font-style: italic; color: var(--primary-dark); font-size: 14px; font-weight: 600; line-height: 1.6; margin: 0;">
+            "Tiada suatu pemberian yang lebih utama dari orang tua kepada anaknya selain pendidikan yang baik."
+          </p>
+          <span style="font-size: 12px; color: var(--secondary); font-weight: 700; display: block; margin-top: 8px;">
+            — HR. Al Hakim (7679)
+          </span>
+        </div>
 
         <div class="auth-wrapper" style="margin-top: 0; padding: 0;">
           <!-- BOX LOGIN UTAMA -->
           <div id="boxLoginMain" class="card">
             <div class="card-title" style="text-align: center;">Ahlan wa Sahlan - Selamat Datang</div>
 
+            <!-- Tab Switcher (Kode JS untuk mengatur tab sudah saya satukan di dalam script.js Ustadzah sebelumnya) -->
             <div class="tabs">
-              <button type="button" id="tabBtnOrtu" class="tab-btn active">Wali Murid</button>
-              <button type="button" id="tabBtnGuru" class="tab-btn">Guru / Asatidz</button>
+              <button type="button" id="tabBtnOrtu" class="tab-btn active" onclick="document.getElementById('formLoginOrtu').style.display='block'; document.getElementById('formLoginGuru').style.display='none'; this.classList.add('active'); document.getElementById('tabBtnGuru').classList.remove('active');">Wali Murid</button>
+              <button type="button" id="tabBtnGuru" class="tab-btn" onclick="document.getElementById('formLoginGuru').style.display='block'; document.getElementById('formLoginOrtu').style.display='none'; this.classList.add('active'); document.getElementById('tabBtnOrtu').classList.remove('active');">Guru / Asatidz</button>
             </div>
 
             <!-- Form Login Orang Tua -->
-            <form id="formLoginOrtu">
+            <!-- PERUBAHAN KRUSIAL: onsubmit event untuk menghentikan reload dan langsung memanggil login -->
+            <form id="formLoginOrtu" onsubmit="event.preventDefault(); window.loginOrtu();">
               <div class="form-group">
                 <label for="ortuNisn">NISN Siswa</label>
                 <input type="text" id="ortuNisn" class="form-control" placeholder="Masukkan NISN" required>
@@ -60,11 +56,12 @@
                 <label for="ortuPassword">Password</label>
                 <input type="password" id="ortuPassword" class="form-control" placeholder="Masukkan Password" required>
               </div>
-              <button type="submit" class="btn btn-primary">Masuk sebagai Orang Tua</button>
+              <button type="submit" id="btnLoginOrtu" class="btn btn-primary">Masuk sebagai Orang Tua</button>
             </form>
 
             <!-- Form Login Guru -->
-            <form id="formLoginGuru" class="hidden">
+            <!-- PERUBAHAN KRUSIAL: onsubmit event untuk menghentikan reload dan langsung memanggil login -->
+            <form id="formLoginGuru" style="display: none;" onsubmit="event.preventDefault(); window.loginGuru();">
               <div class="form-group">
                 <label for="guruNiy">NIY (Nomor Induk Yayasan)</label>
                 <input type="text" id="guruNiy" class="form-control" placeholder="Masukkan NIY Guru" required>
@@ -73,12 +70,12 @@
                 <label for="guruPassword">Password</label>
                 <input type="password" id="guruPassword" class="form-control" placeholder="Masukkan Password" required>
               </div>
-              <button type="submit" class="btn btn-primary">Masuk sebagai Guru</button>
+              <button type="submit" id="btnLoginGuru" class="btn btn-primary">Masuk sebagai Guru</button>
             </form>
           </div>
 
-          <!-- BOX WAJIB RESET PASSWORD ORTU -->
-          <div id="boxResetPassword" class="card hidden">
+          <!-- BOX WAJIB RESET PASSWORD ORTU (Tetap disembunyikan sesuai alur sebelumnya) -->
+          <div id="boxResetPassword" class="card" style="display: none;">
             <div class="card-title">Ubah Password Default</div>
             <div class="alert alert-warning">
               Anda masih menggunakan password standar sekolah. Demi keamanan data ananda, silakan buat password baru terlebih dahulu.
@@ -92,7 +89,7 @@
                 <label for="confirmPassword">Ulangi Password Baru</label>
                 <input type="password" id="confirmPassword" class="form-control" minlength="6" placeholder="Ketik ulang password baru" required>
               </div>
-              <button type="submit" class="btn btn-primary">Simpan & Lanjutkan ke Dasbor</button>
+              <button type="button" class="btn btn-primary">Simpan & Lanjutkan ke Dasbor</button>
             </form>
           </div>
         </div>
