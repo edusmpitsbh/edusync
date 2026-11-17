@@ -9,13 +9,10 @@
 <body>
 
 <nav class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
-  <!-- Bagian Kiri: Logo dan Judul -->
   <div style="display: flex; align-items: center;">
     <img src="Logo SMPIT PNG.png" alt="Logo SMPIT" style="height: 45px; margin-right: 15px;">
     <h1 style="margin: 0; font-size: 20px; color: white;">Portal Guru - SMPIT Sabilul Haq - EduSync</h1>
   </div>
-
-  <!-- Bagian Kanan: Tombol Keluar / Logout -->
   <div>
     <button onclick="logout()" style="background-color: #dc2626; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
       Keluar
@@ -23,7 +20,6 @@
   </div>
 </nav>
 
-<!-- Sapaan Personal Guru -->
 <div style="padding: 20px 20px 0 20px; text-align: center;">
   <h3 style="color: var(--primary); margin: 0;">
     Selamat Datang, Ustadz/Ustadzah <span id="sapaanNamaGuru"></span>
@@ -31,36 +27,37 @@
 </div>
 
 <div id="guruDashboard" class="container">
-
-<!-- Kotak Papan Pengumuman -->
+  
+  <!-- Kotak Papan Pengumuman -->
   <div id="pengumumanBoard" style="display: none; background: #ffffff; border-left: 4px solid var(--secondary); padding: 15px; margin-bottom: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
     <h4 style="margin-top: 0; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center;">
       <span style="margin-right: 8px;">📢</span> Info Sekolah
     </h4>
-    <ul id="listPengumuman" style="margin: 0; padding-left: 20px; color: var(--text); font-size: 14px; line-height: 1.6;">
-      <!-- Daftar pengumuman ditarik dari JS -->
-    </ul>
+    <ul id="listPengumuman" style="margin: 0; padding-left: 20px; color: var(--text); font-size: 14px; line-height: 1.6;"></ul>
   </div>
-  
-  <!-- Navigasi Tab -->
+
   <div class="tabs">
     <button class="tab-btn active" data-target="paneInputAkademik">Input Akademik</button>
     <button class="tab-btn" data-target="paneInputTahfizh">Input Tahfizh</button>
     <button class="tab-btn" data-target="paneInputKehadiran">Input Kehadiran</button>
     <button class="tab-btn" data-target="paneInputAdab">Input Adab</button>
-    <!-- INI TOMBOL BARU UNTUK RIWAYAT -->
     <button class="tab-btn" data-target="paneRiwayat" id="btnTabRiwayat">Riwayat Input</button>
   </div>
 
-  <!-- PANE 1: FORM INPUT AKADEMIK -->
+  <!-- PANE 1: AKADEMIK -->
   <div id="paneInputAkademik" class="card tab-pane">
     <div class="card-title">Form Input Nilai Harian Akademik</div>
     <form id="formAkademik" style="display: flex; flex-direction: column; gap: 10px;">
+      
+      <!-- Filter Kelas Baru -->
+      <label style="color: #d35400; font-weight: bold;">Pilih Kelas:</label>
+      <select id="akademikKelas" required style="padding: 8px; border-radius: 4px; border: 1px solid #d35400; background-color: #fff9f5;"></select>
+
       <label>Nama Siswa:</label>
-      <select id="akademikSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      <select id="akademikSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></select>
       
       <label>Mata Pelajaran:</label>
-      <select id="akademikMapel" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Mata Pelajaran --</option></select>
+      <select id="akademikMapel" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></select>
       
       <label>Materi Pembelajaran:</label>
       <input type="text" id="akademikMateri" required placeholder="Contoh: Bilangan Berpangkat" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
@@ -88,12 +85,17 @@
     </form>
   </div>
 
-  <!-- PANE 2: FORM INPUT TAHFIZH -->
+  <!-- PANE 2: TAHFIZH -->
   <div id="paneInputTahfizh" class="card tab-pane hidden">
     <div class="card-title">Form Input Setoran Tahfizh</div>
     <form id="formTahfizh" style="display: flex; flex-direction: column; gap: 10px;">
+      
+      <!-- Filter Kelompok Tahfizh Baru -->
+      <label style="color: #27ae60; font-weight: bold;">Pilih Kelompok Tahfizh:</label>
+      <select id="tahfizhKelas" required style="padding: 8px; border-radius: 4px; border: 1px solid #27ae60; background-color: #f2fdf6;"></select>
+
       <label>Nama Siswa:</label>
-      <select id="tahfizhSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      <select id="tahfizhSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></select>
       
       <label>Pekan Ke (Angka):</label>
       <input type="number" id="tahfizhPekan" required min="1" placeholder="Contoh: 1" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
@@ -108,12 +110,17 @@
     </form>
   </div>
 
-  <!-- PANE 3: FORM INPUT KEHADIRAN -->
+  <!-- PANE 3: KEHADIRAN -->
   <div id="paneInputKehadiran" class="card tab-pane hidden">
     <div class="card-title">Form Rekap Kehadiran Mingguan</div>
     <form id="formKehadiran" style="display: flex; flex-direction: column; gap: 10px;">
+      
+      <!-- Filter Kelas Baru -->
+      <label style="color: #2980b9; font-weight: bold;">Pilih Kelas:</label>
+      <select id="kehadiranKelas" required style="padding: 8px; border-radius: 4px; border: 1px solid #2980b9; background-color: #f4f9fc;"></select>
+
       <label>Nama Siswa:</label>
-      <select id="kehadiranSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      <select id="kehadiranSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></select>
       
       <label>Pekan Ke (Angka):</label>
       <input type="number" id="kehadiranPekan" required min="1" placeholder="Contoh: 1" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
@@ -131,15 +138,20 @@
     </form>
   </div>
 
-  <!-- PANE 4: FORM INPUT ADAB -->
+  <!-- PANE 4: ADAB -->
   <div id="paneInputAdab" class="card tab-pane hidden">
     <div class="card-title">Form Catatan Adab & Pembinaan</div>
     <form id="formAdab" style="display: flex; flex-direction: column; gap: 10px;">
+      
+      <!-- Filter Kelas Baru -->
+      <label style="color: #8e44ad; font-weight: bold;">Pilih Kelas:</label>
+      <select id="adabKelas" required style="padding: 8px; border-radius: 4px; border: 1px solid #8e44ad; background-color: #faf5fd;"></select>
+
       <label>Tanggal Kejadian:</label>
       <input type="date" id="adabTanggal" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
       
       <label>Nama Siswa:</label>
-      <select id="adabSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      <select id="adabSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"></select>
       
       <label>Kategori:</label>
       <select id="adabKategori" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
@@ -155,7 +167,7 @@
     </form>
   </div>
 
-  <!-- PANE 5: RIWAYAT INPUT (BARU) -->
+  <!-- PANE 5: RIWAYAT -->
   <div id="paneRiwayat" class="card tab-pane hidden">
     <div class="card-title" style="border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px;">Riwayat Input Data Anda</div>
     
@@ -170,13 +182,11 @@
             <th style="padding: 8px;">Nilai</th>
           </tr>
         </thead>
-        <tbody id="tabelRiwayatAkademikGuru">
-          <tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr>
-        </tbody>
+        <tbody id="tabelRiwayatAkademikGuru"><tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr></tbody>
       </table>
     </div>
 
-    <h4 style="margin-top: 30px; color: #d35400;">2. Setoran Tahfizh</h4>
+    <h4 style="margin-top: 30px; color: #27ae60;">2. Setoran Tahfizh</h4>
     <div class="table-responsive">
       <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead style="background-color: #f4f4f4;">
@@ -187,13 +197,11 @@
             <th style="padding: 8px;">Predikat</th>
           </tr>
         </thead>
-        <tbody id="tabelRiwayatTahfizhGuru">
-          <tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr>
-        </tbody>
+        <tbody id="tabelRiwayatTahfizhGuru"><tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr></tbody>
       </table>
     </div>
 
-    <h4 style="margin-top: 30px; color: #d35400;">3. Catatan Adab</h4>
+    <h4 style="margin-top: 30px; color: #8e44ad;">3. Catatan Adab</h4>
     <div class="table-responsive">
       <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
         <thead style="background-color: #f4f4f4;">
@@ -204,13 +212,10 @@
             <th style="padding: 8px;">Kategori</th>
           </tr>
         </thead>
-        <tbody id="tabelRiwayatAdabGuru">
-          <tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr>
-        </tbody>
+        <tbody id="tabelRiwayatAdabGuru"><tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr></tbody>
       </table>
     </div>
   </div>
-
 </div>
 
 <script src="script.js"></script>

@@ -1,42 +1,39 @@
 /* ========================================================
    SCRIPT.JS - PORTAL EDUSYNC SMPIT SABILUL HAQ
 ======================================================== */
-
-// PERHATIAN: Masukkan Link Web App URL dari Google Apps Script Ustadzah di bawah ini!
 const API_URL = "https://script.google.com/macros/s/AKfycbx-0mPTIgUOcIJockj26TN3M-490tvUkw0ELEjms0vRd0NqBMCxiY_yG3sE1EaKnvTz/exec";
 
-// Variabel Global
 let loggedInOrtu = JSON.parse(localStorage.getItem("loggedInOrtu"));
 let loggedInGuru = JSON.parse(localStorage.getItem("loggedInGuru"));
+window.dataSiswaGlobal = []; // Memori untuk filter kelas
 
-// Inisialisasi saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {
   setupTabs();
   
-  // Panggil setupFormSubmits hanya jika ada di halaman guru
   if (document.getElementById("formAkademik")) {
     setupFormSubmits(); 
   }
 
-  // Cek apakah sedang di halaman Ortu
+  // Dasbor Ortu
   if (document.getElementById("ortuDashboard")) {
     if (!loggedInOrtu) {
       window.location.href = "index.html"; 
     } else {
       document.getElementById("sapaanNamaSiswa").innerText = loggedInOrtu.Nama_Siswa;
       fetchDashboardOrtu();
-      fetchPengumuman(); // <--- Memanggil Pengumuman untuk Ortu
+      fetchPengumuman();
     }
   }
 
-  // Cek apakah sedang di halaman Guru
+  // Dasbor Guru
   if (document.getElementById("guruDashboard")) {
     if (!loggedInGuru) {
       window.location.href = "index.html";
     } else {
       document.getElementById("sapaanNamaGuru").innerText = loggedInGuru.Nama_Guru;
       fetchInitDataGuru();
-      fetchPengumuman(); // <--- Memanggil Pengumuman untuk Guru
+      fetchPengumuman();
+      setupFilterSiswa(); // Mengaktifkan Filter Kelas Pintar
       
       const btnRiwayat = document.getElementById("btnTabRiwayat");
       if (btnRiwayat) {
@@ -46,27 +43,43 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-/* ==================== FUNGSI AUTH & LOGOUT ==================== */
 function logout() {
   localStorage.removeItem("loggedInOrtu");
   localStorage.removeItem("loggedInGuru");
   window.location.href = "index.html";
 }
 
-/* ==================== FUNGSI LOGIN (HALAMAN AWAL) ==================== */
+/* ==================== FUNGSI PENGUMUMAN ==================== */
+async function fetchPengumuman() {
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "getPengumuman" })
+    });
+    const res = await response.json();
+    if (res.status === "success" && res.data.length > 0) {
+      const board = document.getElementById("pengumumanBoard");
+      const list = document.getElementById("listPengumuman");
+      if (board && list) {
+        list.innerHTML = "";
+        res.data.forEach(item => {
+          list.innerHTML += `<li style="margin-bottom: 8px;"><strong>${item.Tanggal || '-'}:</strong> ${item.Isi_Pengumuman || '-'}</li>`;
+        });
+        board.style.display = "block"; 
+      }
+    }
+  } catch (err) {}
+}
+
+/* ==================== FUNGSI LOGIN ==================== */
 window.loginOrtu = async function() {
   const nisn = document.getElementById("ortuNisn").value; 
   const password = document.getElementById("ortuPassword").value; 
-
-  if (!nisn || !password) {
-    alert("NISN dan Password tidak boleh kosong!");
-    return;
-  }
+  if (!nisn || !password) { alert("NISN dan Password tidak boleh kosong!"); return; }
 
   const btn = document.getElementById("btnLoginOrtu");
   const originalText = btn.innerText;
-  btn.innerText = "Memverifikasi...";
-  btn.disabled = true;
+  btn.innerText = "Memverifikasi..."; btn.disabled = true;
 
   try {
     const response = await fetch(API_URL, {
@@ -77,30 +90,19 @@ window.loginOrtu = async function() {
     if (res.status === "success") {
       localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
       window.location.href = "ortu.html"; 
-    } else {
-      alert(res.message);
-    }
-  } catch (err) {
-    alert("Gagal terhubung ke server. Pastikan API_URL benar dan internet stabil.");
-  } finally {
-    btn.innerText = originalText;
-    btn.disabled = false;
-  }
+    } else { alert(res.message); }
+  } catch (err) { alert("Gagal terhubung ke server."); } 
+  finally { btn.innerText = originalText; btn.disabled = false; }
 };
 
 window.loginGuru = async function() {
   const niy = document.getElementById("guruNiy").value; 
   const password = document.getElementById("guruPassword").value; 
-
-  if (!niy || !password) {
-    alert("NIY dan Password tidak boleh kosong!");
-    return;
-  }
+  if (!niy || !password) { alert("NIY dan Password tidak boleh kosong!"); return; }
 
   const btn = document.getElementById("btnLoginGuru");
   const originalText = btn.innerText;
-  btn.innerText = "Memverifikasi...";
-  btn.disabled = true;
+  btn.innerText = "Memverifikasi..."; btn.disabled = true;
 
   try {
     const response = await fetch(API_URL, {
@@ -111,23 +113,15 @@ window.loginGuru = async function() {
     if (res.status === "success") {
       localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
       window.location.href = "guru.html"; 
-    } else {
-      alert(res.message);
-    }
-  } catch (err) {
-    alert("Gagal terhubung ke server. Pastikan API_URL benar dan internet stabil.");
-  } finally {
-    btn.innerText = originalText;
-    btn.disabled = false;
-  }
+    } else { alert(res.message); }
+  } catch (err) { alert("Gagal terhubung ke server."); } 
+  finally { btn.innerText = originalText; btn.disabled = false; }
 };
-
 
 /* ==================== FUNGSI DASBOR WALI MURID ==================== */
 async function fetchDashboardOrtu() {
   const loading = document.getElementById("loadingOrtu");
   if(loading) loading.style.display = "block";
-
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -135,15 +129,10 @@ async function fetchDashboardOrtu() {
     });
     const res = await response.json();
     if (loading) loading.style.display = "none";
-
-    if (res.status === "success") {
-      renderDashboardOrtu(res);
-    } else {
-      alert("Gagal memuat data: " + res.message);
-    }
+    if (res.status === "success") { renderDashboardOrtu(res); } 
+    else { alert("Gagal memuat data: " + res.message); }
   } catch (err) {
     if (loading) loading.style.display = "none";
-    alert("Terjadi kesalahan jaringan.");
   }
 }
 
@@ -152,82 +141,42 @@ function renderDashboardOrtu(data) {
   document.getElementById("profilNisn").innerText = data.profil.NISN || "-";
   document.getElementById("profilKelas").innerText = data.profil.Kelas_Reguler || "-";
   document.getElementById("profilHalaqah").innerText = data.profil.Kelompok_Tahfizh || "-";
-  const waliKelasEl = document.getElementById("profilWaliKelas");
-  if (waliKelasEl) waliKelasEl.innerText = data.profil.Wali_Kelas || "-";
+  if (document.getElementById("profilWaliKelas")) document.getElementById("profilWaliKelas").innerText = data.profil.Wali_Kelas || "-";
 
   const tbodyAkademik = document.getElementById("tbodyAkademik");
   if (tbodyAkademik) {
-    tbodyAkademik.innerHTML = "";
-    if (data.akademik.length === 0) {
-      tbodyAkademik.innerHTML = "<tr><td colspan='6' style='text-align: center;'>Belum ada data.</td></tr>";
-    } else {
-      data.akademik.forEach(row => {
-        tbodyAkademik.innerHTML += `<tr>
-          <td>${row.Timestamp || "-"}</td>
-          <td>${row.Mata_Pelajaran || "-"}</td>
-          <td>${row.Materi || "-"}</td>
-          <td>${row.Jenis_Penilaian || "-"}</td>
-          <td><strong>${row.Nilai || "-"}</strong></td>
-          <td>${row.Catatan_Guru || row.Nama_Guru || "-"}</td>
-        </tr>`;
-      });
-    }
+    tbodyAkademik.innerHTML = data.akademik.length === 0 ? "<tr><td colspan='6' style='text-align: center;'>Belum ada data.</td></tr>" : "";
+    data.akademik.forEach(row => {
+      tbodyAkademik.innerHTML += `<tr><td>${row.Timestamp || "-"}</td><td>${row.Mata_Pelajaran || "-"}</td><td>${row.Materi || "-"}</td><td>${row.Jenis_Penilaian || "-"}</td><td><strong>${row.Nilai || "-"}</strong></td><td>${row.Catatan_Guru || row.Nama_Guru || "-"}</td></tr>`;
+    });
   }
 
   const tbodyTahfizh = document.getElementById("tbodyTahfizh");
   if (tbodyTahfizh) {
-    tbodyTahfizh.innerHTML = "";
-    if (data.tahfizh.length === 0) {
-      tbodyTahfizh.innerHTML = "<tr><td colspan='4' style='text-align: center;'>Belum ada data.</td></tr>";
-    } else {
-      data.tahfizh.forEach(row => {
-        tbodyTahfizh.innerHTML += `<tr>
-          <td>${row.Timestamp || "-"}</td>
-          <td>Pekan ${row.Pekan_Ke || "-"}</td>
-          <td>${row.Capaian || "-"}</td>
-          <td>${row.Catatan_Guru || "-"}</td>
-        </tr>`;
-      });
-    }
+    tbodyTahfizh.innerHTML = data.tahfizh.length === 0 ? "<tr><td colspan='4' style='text-align: center;'>Belum ada data.</td></tr>" : "";
+    data.tahfizh.forEach(row => {
+      tbodyTahfizh.innerHTML += `<tr><td>${row.Timestamp || "-"}</td><td>Pekan ${row.Pekan_Ke || "-"}</td><td>${row.Capaian || "-"}</td><td>${row.Catatan_Guru || "-"}</td></tr>`;
+    });
   }
 
   const tbodyKehadiran = document.getElementById("tbodyKehadiran");
   if (tbodyKehadiran) {
-    tbodyKehadiran.innerHTML = "";
-    if (data.kehadiran.length === 0) {
-      tbodyKehadiran.innerHTML = "<tr><td colspan='5' style='text-align: center;'>Belum ada data.</td></tr>";
-    } else {
-      data.kehadiran.forEach(row => {
-        tbodyKehadiran.innerHTML += `<tr>
-          <td>${row.Timestamp || "-"}</td>
-          <td>Pekan ${row.Pekan_Ke || "-"}</td>
-          <td style="color: red; font-weight: bold;">${row.Sakit || "0"}</td>
-          <td style="color: orange; font-weight: bold;">${row.Izin || "0"}</td>
-          <td style="color: darkred; font-weight: bold;">${row.Alpa || "0"}</td>
-        </tr>`;
-      });
-    }
+    tbodyKehadiran.innerHTML = data.kehadiran.length === 0 ? "<tr><td colspan='5' style='text-align: center;'>Belum ada data.</td></tr>" : "";
+    data.kehadiran.forEach(row => {
+      tbodyKehadiran.innerHTML += `<tr><td>${row.Timestamp || "-"}</td><td>Pekan ${row.Pekan_Ke || "-"}</td><td style="color: red;">${row.Sakit || "0"}</td><td style="color: orange;">${row.Izin || "0"}</td><td style="color: darkred;">${row.Alpa || "0"}</td></tr>`;
+    });
   }
 
   const tbodyAdab = document.getElementById("tbodyAdab");
   if (tbodyAdab) {
-    tbodyAdab.innerHTML = "";
-    if (data.adab.length === 0) {
-      tbodyAdab.innerHTML = "<tr><td colspan='4' style='text-align: center;'>Belum ada data.</td></tr>";
-    } else {
-      data.adab.forEach(row => {
-        tbodyAdab.innerHTML += `<tr>
-          <td>${row.Tanggal || row.Timestamp || "-"}</td>
-          <td>${row.Kategori || "-"}</td>
-          <td>${row.Catatan_Perilaku || "-"}</td>
-          <td>${row.Nama_Pelapor || "-"}</td>
-        </tr>`;
-      });
-    }
+    tbodyAdab.innerHTML = data.adab.length === 0 ? "<tr><td colspan='4' style='text-align: center;'>Belum ada data.</td></tr>" : "";
+    data.adab.forEach(row => {
+      tbodyAdab.innerHTML += `<tr><td>${row.Tanggal || row.Timestamp || "-"}</td><td>${row.Kategori || "-"}</td><td>${row.Catatan_Perilaku || "-"}</td><td>${row.Nama_Pelapor || "-"}</td></tr>`;
+    });
   }
 }
 
-/* ==================== FUNGSI DASBOR GURU & INPUT ==================== */
+/* ==================== FUNGSI DASBOR GURU & FILTER ==================== */
 async function fetchInitDataGuru() {
   try {
     const response = await fetch(API_URL, {
@@ -236,14 +185,16 @@ async function fetchInitDataGuru() {
     });
     const res = await response.json();
     if (res.status === "success") {
-      populateGuruDropdowns(res.penugasan, res.siswaList);
+      window.dataSiswaGlobal = res.siswaList; // Simpan daftar siswa
+      populateGuruDropdowns(res.penugasan);
     }
   } catch (err) {
     console.error("Gagal memuat data awal guru:", err);
   }
 }
 
-function populateGuruDropdowns(penugasan, siswaList) {
+function populateGuruDropdowns(penugasan) {
+  // 1. Mapel
   const selMapel = document.getElementById("akademikMapel");
   if (selMapel) {
     selMapel.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
@@ -252,16 +203,62 @@ function populateGuruDropdowns(penugasan, siswaList) {
     });
   }
 
-  const dropdownIds = ["akademikSiswa", "tahfizhSiswa", "kehadiranSiswa", "adabSiswa"];
-  dropdownIds.forEach(id => {
+  // 2. Kumpulkan Kelas Unik dari Database
+  const kelasUnik = [...new Set(window.dataSiswaGlobal.map(s => s.Kelas_Reguler))].filter(Boolean).sort();
+  const halaqahUnik = [...new Set(window.dataSiswaGlobal.map(s => s.Kelompok_Tahfizh))].filter(Boolean).sort();
+
+  // 3. Masukkan ke dropdown filter Kelas
+  ["akademikKelas", "kehadiranKelas", "adabKelas"].forEach(id => {
     const sel = document.getElementById(id);
     if (sel) {
-      sel.innerHTML = '<option value="">-- Pilih Siswa --</option>';
-      siswaList.forEach(s => {
-        sel.innerHTML += `<option value="${s.NISN}">${s.Nama_Siswa} (${s.Kelas_Reguler})</option>`;
-      });
+      sel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+      kelasUnik.forEach(k => sel.innerHTML += `<option value="${k}">${k}</option>`);
     }
   });
+
+  const selTahfizh = document.getElementById("tahfizhKelas");
+  if (selTahfizh) {
+    selTahfizh.innerHTML = '<option value="">-- Pilih Kelompok Tahfizh --</option>';
+    halaqahUnik.forEach(h => selTahfizh.innerHTML += `<option value="${h}">${h}</option>`);
+  }
+
+  // 4. Kosongkan kotak siswa awal
+  ["akademikSiswa", "tahfizhSiswa", "kehadiranSiswa", "adabSiswa"].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) sel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
+  });
+}
+
+function setupFilterSiswa() {
+  const applyFilter = (kelasId, siswaId, isTahfizh) => {
+    const selKelas = document.getElementById(kelasId);
+    const selSiswa = document.getElementById(siswaId);
+    
+    if (selKelas && selSiswa) {
+      selKelas.addEventListener("change", () => {
+        const val = selKelas.value;
+        selSiswa.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+        if (!val) {
+          selSiswa.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
+          return;
+        }
+
+        const filtered = window.dataSiswaGlobal.filter(s => 
+          isTahfizh ? s.Kelompok_Tahfizh === val : s.Kelas_Reguler === val
+        );
+
+        filtered.forEach(s => {
+          selSiswa.innerHTML += `<option value="${s.NISN}">${s.Nama_Siswa}</option>`;
+        });
+      });
+    }
+  };
+
+  // Terapkan filter ke 4 formulir
+  applyFilter("akademikKelas", "akademikSiswa", false);
+  applyFilter("kehadiranKelas", "kehadiranSiswa", false);
+  applyFilter("adabKelas", "adabSiswa", false);
+  applyFilter("tahfizhKelas", "tahfizhSiswa", true);
 }
 
 function setupFormSubmits() {
@@ -292,7 +289,7 @@ function setupFormSubmits() {
       const payload = {
         action: "inputTahfizh",
         nisn: selSiswa.value,
-        namaSiswa: selSiswa.options[selSiswa.selectedIndex].text.split(" (")[0],
+        namaSiswa: selSiswa.options[selSiswa.selectedIndex].text,
         pekanKe: document.getElementById("tahfizhPekan").value,
         capaian: document.getElementById("tahfizhCapaian").value,
         catatanGuru: document.getElementById("tahfizhCatatan").value
@@ -309,7 +306,7 @@ function setupFormSubmits() {
       const payload = {
         action: "inputKehadiran",
         nisn: selSiswa.value,
-        namaSiswa: selSiswa.options[selSiswa.selectedIndex].text.split(" (")[0],
+        namaSiswa: selSiswa.options[selSiswa.selectedIndex].text,
         pekanKe: document.getElementById("kehadiranPekan").value,
         sakit: document.getElementById("kehadiranSakit").value,
         izin: document.getElementById("kehadiranIzin").value,
@@ -339,9 +336,7 @@ function setupFormSubmits() {
 async function sendDataForm(payload, formId) {
   const btn = document.querySelector(`#${formId} button[type="submit"]`);
   const originalText = btn.innerText;
-  btn.innerText = "Meyimpan Data...";
-  btn.disabled = true;
-
+  btn.innerText = "Menyimpan Data..."; btn.disabled = true;
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -351,13 +346,12 @@ async function sendDataForm(payload, formId) {
     alert(res.message);
     if (res.status === "success") {
       document.getElementById(formId).reset();
+      // Kembalikan kotak siswa jadi kosong lagi setelah sukses input
+      const selects = document.querySelectorAll(`#${formId} select`);
+      selects.forEach(sel => { if(sel.id.includes("Siswa")) sel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>'; });
     }
-  } catch (err) {
-    alert("Terjadi kesalahan jaringan saat menyimpan data.");
-  } finally {
-    btn.innerText = originalText;
-    btn.disabled = false;
-  }
+  } catch (err) { alert("Terjadi kesalahan jaringan."); } 
+  finally { btn.innerText = originalText; btn.disabled = false; }
 }
 
 /* ==================== FUNGSI RIWAYAT GURU ==================== */
@@ -372,60 +366,22 @@ async function fetchRiwayatGuru() {
       body: JSON.stringify({ action: "getRiwayatGuru", niy: loggedInGuru.NIY })
     });
     const res = await response.json();
-    
-    if (res.status === "success") {
-      renderRiwayatGuru(res.riwayat);
-    }
-  } catch (err) {
-    console.error("Gagal menarik riwayat:", err);
-  }
+    if (res.status === "success") { renderRiwayatGuru(res.riwayat); }
+  } catch (err) {}
 }
 
 function renderRiwayatGuru(riwayat) {
   const tabAkademik = document.getElementById("tabelRiwayatAkademikGuru");
-  tabAkademik.innerHTML = "";
-  if (!riwayat.akademik || riwayat.akademik.length === 0) {
-    tabAkademik.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Belum ada data.</td></tr>";
-  } else {
-    riwayat.akademik.forEach(row => {
-      tabAkademik.innerHTML += `<tr>
-        <td>${row.Timestamp || '-'}</td>
-        <td><strong>${row.Nama_Siswa || row.NISN || '-'}</strong></td>
-        <td>${row.Mata_Pelajaran || '-'}<br><small style="color:gray;">${row.Materi || '-'}</small></td>
-        <td><strong>${row.Nilai || '-'}</strong></td>
-      </tr>`;
-    });
-  }
+  tabAkademik.innerHTML = riwayat.akademik.length === 0 ? "<tr><td colspan='4' style='text-align:center;'>Belum ada data.</td></tr>" : "";
+  riwayat.akademik.forEach(row => { tabAkademik.innerHTML += `<tr><td>${row.Timestamp || '-'}</td><td><strong>${row.Nama_Siswa || row.NISN || '-'}</strong></td><td>${row.Mata_Pelajaran || '-'}<br><small style="color:gray;">${row.Materi || '-'}</small></td><td><strong>${row.Nilai || '-'}</strong></td></tr>`; });
 
   const tabTahfizh = document.getElementById("tabelRiwayatTahfizhGuru");
-  tabTahfizh.innerHTML = "";
-  if (!riwayat.tahfizh || riwayat.tahfizh.length === 0) {
-    tabTahfizh.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Belum ada data.</td></tr>";
-  } else {
-    riwayat.tahfizh.forEach(row => {
-      tabTahfizh.innerHTML += `<tr>
-        <td>${row.Timestamp || '-'}</td>
-        <td><strong>${row.Nama_Siswa || row.NISN || '-'}</strong></td>
-        <td>Pekan ${row.Pekan_Ke || '-'}<br><small style="color:gray;">${row.Capaian || '-'}</small></td>
-        <td>${row.Catatan_Guru || '-'}</td>
-      </tr>`;
-    });
-  }
+  tabTahfizh.innerHTML = riwayat.tahfizh.length === 0 ? "<tr><td colspan='4' style='text-align:center;'>Belum ada data.</td></tr>" : "";
+  riwayat.tahfizh.forEach(row => { tabTahfizh.innerHTML += `<tr><td>${row.Timestamp || '-'}</td><td><strong>${row.Nama_Siswa || row.NISN || '-'}</strong></td><td>Pekan ${row.Pekan_Ke || '-'}<br><small style="color:gray;">${row.Capaian || '-'}</small></td><td>${row.Catatan_Guru || '-'}</td></tr>`; });
 
   const tabAdab = document.getElementById("tabelRiwayatAdabGuru");
-  tabAdab.innerHTML = "";
-  if (!riwayat.adab || riwayat.adab.length === 0) {
-    tabAdab.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Belum ada data.</td></tr>";
-  } else {
-    riwayat.adab.forEach(row => {
-      tabAdab.innerHTML += `<tr>
-        <td>${row.Tanggal || row.Timestamp || '-'}</td>
-        <td><strong>${row.Nama_Siswa || row.NISN || '-'}</strong></td>
-        <td>${row.Kategori || '-'}<br><small style="color:gray;">${row.Catatan_Perilaku || '-'}</small></td>
-        <td>-</td>
-      </tr>`;
-    });
-  }
+  tabAdab.innerHTML = riwayat.adab.length === 0 ? "<tr><td colspan='4' style='text-align:center;'>Belum ada data.</td></tr>" : "";
+  riwayat.adab.forEach(row => { tabAdab.innerHTML += `<tr><td>${row.Tanggal || row.Timestamp || '-'}</td><td><strong>${row.Nama_Siswa || row.NISN || '-'}</strong></td><td>${row.Kategori || '-'}<br><small style="color:gray;">${row.Catatan_Perilaku || '-'}</small></td><td>-</td></tr>`; });
 }
 
 /* ==================== FUNGSI BANTUAN (TAB NAVIGASI) ==================== */
@@ -435,52 +391,14 @@ function setupTabs() {
     btn.addEventListener("click", () => {
       const container = btn.closest(".container, .auth-wrapper") || document.body;
       container.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      container.querySelectorAll(".tab-pane").forEach(p => {
-        p.style.display = "none";
-        p.classList.add("hidden");
-      });
+      container.querySelectorAll(".tab-pane").forEach(p => { p.style.display = "none"; p.classList.add("hidden"); });
       
       btn.classList.add("active");
       const targetId = btn.getAttribute("data-target");
       if (targetId) {
         const targetPane = document.getElementById(targetId);
-        if (targetPane) {
-          targetPane.style.display = "block";
-          targetPane.classList.remove("hidden");
-        }
+        if (targetPane) { targetPane.style.display = "block"; targetPane.classList.remove("hidden"); }
       }
     });
   });
-}
-
-/* ==================== FUNGSI PENGUMUMAN ==================== */
-async function fetchPengumuman() {
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "getPengumuman" })
-    });
-    const res = await response.json();
-    
-    if (res.status === "success" && res.data.length > 0) {
-      renderPengumuman(res.data);
-    }
-  } catch (err) {
-    console.error("Gagal memuat pengumuman:", err);
-  }
-}
-
-function renderPengumuman(dataPengumuman) {
-  const board = document.getElementById("pengumumanBoard");
-  const list = document.getElementById("listPengumuman");
-  
-  if (board && list) {
-    list.innerHTML = "";
-    dataPengumuman.forEach(item => {
-      list.innerHTML += `<li style="margin-bottom: 8px;">
-        <strong>${item.Tanggal || '-'}:</strong> ${item.Isi_Pengumuman || '-'}
-      </li>`;
-    });
-    board.style.display = "block"; // Munculkan kotaknya jika ada isinya
-  }
 }
