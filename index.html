@@ -24,7 +24,7 @@
           <h1 style="margin: 0; font-size: 24px; color: #1e293b;">EduSync - SMPIT Sabilul Haq</h1>
         </nav>
 
-        <!-- Nasihat Pendidikan (Hadits Keutamaan Mendidik Anak) -->
+        <!-- Nasihat Pendidikan -->
         <div style="text-align: center; margin-top: -10px; margin-bottom: 30px; padding: 0 15px;">
           <p style="font-style: italic; color: var(--primary-dark); font-size: 14px; font-weight: 600; line-height: 1.6; margin: 0;">
             "Tiada suatu pemberian yang lebih utama dari orang tua kepada anaknya selain pendidikan yang baik."
@@ -39,14 +39,12 @@
           <div id="boxLoginMain" class="card">
             <div class="card-title" style="text-align: center;">Ahlan wa Sahlan - Selamat Datang</div>
 
-            <!-- Tab Switcher (Kode JS untuk mengatur tab sudah saya satukan di dalam script.js Ustadzah sebelumnya) -->
             <div class="tabs">
               <button type="button" id="tabBtnOrtu" class="tab-btn active" onclick="document.getElementById('formLoginOrtu').style.display='block'; document.getElementById('formLoginGuru').style.display='none'; this.classList.add('active'); document.getElementById('tabBtnGuru').classList.remove('active');">Wali Murid</button>
               <button type="button" id="tabBtnGuru" class="tab-btn" onclick="document.getElementById('formLoginGuru').style.display='block'; document.getElementById('formLoginOrtu').style.display='none'; this.classList.add('active'); document.getElementById('tabBtnOrtu').classList.remove('active');">Guru / Asatidz</button>
             </div>
 
             <!-- Form Login Orang Tua -->
-            <!-- PERUBAHAN KRUSIAL: onsubmit event untuk menghentikan reload dan langsung memanggil login -->
             <form id="formLoginOrtu" onsubmit="event.preventDefault(); window.loginOrtu();">
               <div class="form-group">
                 <label for="ortuNisn">NISN Siswa</label>
@@ -54,13 +52,15 @@
               </div>
               <div class="form-group">
                 <label for="ortuPassword">Password</label>
-                <input type="password" id="ortuPassword" class="form-control" placeholder="Masukkan Password" required>
+                <div style="position: relative;">
+                  <input type="password" id="ortuPassword" class="form-control" placeholder="Masukkan Password" required style="padding-right: 40px;">
+                  <span onclick="togglePassword('ortuPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+                </div>
               </div>
               <button type="submit" id="btnLoginOrtu" class="btn btn-primary">Masuk sebagai Orang Tua</button>
             </form>
 
             <!-- Form Login Guru -->
-            <!-- PERUBAHAN KRUSIAL: onsubmit event untuk menghentikan reload dan langsung memanggil login -->
             <form id="formLoginGuru" style="display: none;" onsubmit="event.preventDefault(); window.loginGuru();">
               <div class="form-group">
                 <label for="guruNiy">NIY (Nomor Induk Yayasan)</label>
@@ -68,13 +68,16 @@
               </div>
               <div class="form-group">
                 <label for="guruPassword">Password</label>
-                <input type="password" id="guruPassword" class="form-control" placeholder="Masukkan Password" required>
+                <div style="position: relative;">
+                  <input type="password" id="guruPassword" class="form-control" placeholder="Masukkan Password" required style="padding-right: 40px;">
+                  <span onclick="togglePassword('guruPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+                </div>
               </div>
               <button type="submit" id="btnLoginGuru" class="btn btn-primary">Masuk sebagai Guru</button>
             </form>
           </div>
 
-          <!-- BOX WAJIB RESET PASSWORD ORTU (Tetap disembunyikan sesuai alur sebelumnya) -->
+          <!-- BOX WAJIB RESET PASSWORD -->
           <div id="boxResetPassword" class="card" style="display: none;">
             <div class="card-title">Ubah Password Default</div>
             <div class="alert alert-warning">
@@ -83,11 +86,17 @@
             <form id="formResetPassword">
               <div class="form-group">
                 <label for="newPassword">Password Baru</label>
-                <input type="password" id="newPassword" class="form-control" minlength="6" placeholder="Minimal 6 karakter" required>
+                <div style="position: relative;">
+                  <input type="password" id="newPassword" class="form-control" minlength="6" placeholder="Minimal 6 karakter" required style="padding-right: 40px;">
+                  <span onclick="togglePassword('newPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+                </div>
               </div>
               <div class="form-group">
                 <label for="confirmPassword">Ulangi Password Baru</label>
-                <input type="password" id="confirmPassword" class="form-control" minlength="6" placeholder="Ketik ulang password baru" required>
+                <div style="position: relative;">
+                  <input type="password" id="confirmPassword" class="form-control" minlength="6" placeholder="Ketik ulang password baru" required style="padding-right: 40px;">
+                  <span onclick="togglePassword('confirmPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; user-select: none;">👁️</span>
+                </div>
               </div>
               <button type="button" class="btn btn-primary">Simpan & Lanjutkan ke Dasbor</button>
             </form>
@@ -97,6 +106,20 @@
       </div>
     </div>
   </div>
+
+  <!-- Skrip Khusus Fitur Tampil/Sembunyi Password -->
+  <script>
+    function togglePassword(inputId, iconElement) {
+      const inputField = document.getElementById(inputId);
+      if (inputField.type === "password") {
+        inputField.type = "text";
+        iconElement.innerText = "👁️‍🗨️"; // Ikon monyet tutup mata (atau bisa diganti 👁️‍🗨️ silang)
+      } else {
+        inputField.type = "password";
+        iconElement.innerText = "👁️"; // Ikon mata terbuka
+      }
+    }
+  </script>
 
   <script src="script.js"></script>
   <div class="watermark">Developed by Khairia Harli 2026</div>
