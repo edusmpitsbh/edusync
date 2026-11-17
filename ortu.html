@@ -30,134 +30,131 @@
   </h3>
 </div>
 
-  <div id="ortuDashboard" class="container">
-<!-- Kotak Papan Pengumuman -->
-<div id="pengumumanBoard" style="display: none; background: #ffffff; border-left: 4px solid var(--secondary); padding: 15px; margin-bottom: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-  <h4 style="margin-top: 0; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center;">
-    <span style="margin-right: 8px;">📢</span> Info Sekolah
-  </h4>
-  <ul id="listPengumuman" style="margin: 0; padding-left: 20px; color: var(--text); font-size: 14px; line-height: 1.6;">
-    <!-- Daftar pengumuman akan dimuat di sini oleh JS -->
-  </ul>
-</div>
+<div id="ortuDashboard" class="container">
+  <!-- Kotak Papan Pengumuman -->
+  <div id="pengumumanBoard" style="display: none; background: #ffffff; border-left: 4px solid var(--secondary); padding: 15px; margin-bottom: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+    <h4 style="margin-top: 0; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center;">
+      <span style="margin-right: 8px;">📢</span> Info Sekolah
+    </h4>
+    <ul id="listPengumuman" style="margin: 0; padding-left: 20px; color: var(--text); font-size: 14px; line-height: 1.6;">
+      <!-- Daftar pengumuman akan dimuat di sini oleh JS -->
+    </ul>
+  </div>
 
-    <!-- Profil Siswa -->
-    <div class="card">
-      <div class="card-title">Identitas Santri / Siswa</div>
-      <div class="profile-box">
-        <div class="profile-item">
-          <span>Nama Lengkap</span>
-          <strong id="profilNama">-</strong>
-        </div>
-        <div class="profile-item">
-          <span>NISN</span>
-          <strong id="profilNisn">-</strong>
-        </div>
-        <div class="profile-item">
-          <span>Kelas Reguler (Putra/Putri)</span>
-          <strong id="profilKelas">-</strong>
-        </div>
-        <div class="profile-item">
-          <span>Kelompok Halaqah Tahfizh</span>
-          <strong id="profilHalaqah">-</strong>
-        </div>
-        
-        <!-- INI KOTAK BARU UNTUK WALI KELAS -->
-        <div class="profile-item">
-          <span>Wali Kelas</span>
-          <strong id="profilWaliKelas">-</strong>
-        </div>
-
+  <!-- Profil Siswa -->
+  <div class="card">
+    <div class="card-title">Identitas Santri / Siswa</div>
+    <div class="profile-box">
+      <div class="profile-item">
+        <span>Nama Lengkap</span>
+        <strong id="profilNama">-</strong>
       </div>
-    </div>
-
-    <div id="loadingOrtu" class="alert alert-info">Memuat riwayat akademik, tahfizh, kehadiran, dan adab...</div>
-
-    <!-- Navigasi Tab Riwayat -->
-    <div class="tabs">
-      <button class="tab-btn active" data-target="paneAkademik">Nilai Akademik</button>
-      <button class="tab-btn" data-target="paneTahfizh">Setoran Tahfizh</button>
-      <button class="tab-btn" data-target="paneKehadiran">Kehadiran</button>
-      <button class="tab-btn" data-target="paneAdab">Catatan Adab</button>
-    </div>
-
-    <!-- Pane 1: Akademik -->
-    <div id="paneAkademik" class="card tab-pane">
-      <div class="card-title">Riwayat Nilai Harian Akademik</div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Waktu Input</th>
-              <th>Mata Pelajaran</th>
-              <th>Jenis Penilaian</th>
-              <th>Nilai</th>
-              <th>Semester</th>
-              <th>Guru Pengampu</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyAkademik"></tbody>
-        </table>
+      <div class="profile-item">
+        <span>NISN</span>
+        <strong id="profilNisn">-</strong>
       </div>
-    </div>
-
-    <!-- Pane 2: Tahfizh -->
-    <div id="paneTahfizh" class="card tab-pane hidden">
-      <div class="card-title">Riwayat Capaian & Setoran Tahfizh</div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Jenis Setoran</th>
-              <th>Surah & Ayat</th>
-              <th>Predikat</th>
-              <th>Catatan Guru / Muhaffizh</th>
-              <th>Penguji</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyTahfizh"></tbody>
-        </table>
+      <div class="profile-item">
+        <span>Kelas Reguler (Putra/Putri)</span>
+        <strong id="profilKelas">-</strong>
       </div>
-    </div>
-
-    <!-- Pane 3: Kehadiran -->
-    <div id="paneKehadiran" class="card tab-pane hidden">
-      <div class="card-title">Riwayat Kehadiran Siswa</div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Status</th>
-              <th>Keterangan</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyKehadiran"></tbody>
-        </table>
+      <div class="profile-item">
+        <span>Kelompok Halaqah Tahfizh</span>
+        <strong id="profilHalaqah">-</strong>
       </div>
-    </div>
-
-    <!-- Pane 4: Adab -->
-    <div id="paneAdab" class="card tab-pane hidden">
-      <div class="card-title">Catatan Adab & Pembinaan Karakter</div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Kategori</th>
-              <th>Catatan Perilaku</th>
-              <th>Guru Pelapor</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyAdab"></tbody>
-        </table>
+      <div class="profile-item">
+        <span>Wali Kelas</span>
+        <strong id="profilWaliKelas">-</strong>
       </div>
     </div>
   </div>
 
-  <script src="script.js"></script>
-  <div class="watermark">Developed by Khairia Harli 2026</div>
+  <div id="loadingOrtu" class="alert alert-info">Memuat riwayat akademik, tahfizh, kehadiran, dan adab...</div>
+
+  <!-- Navigasi Tab Riwayat -->
+  <div class="tabs">
+    <button class="tab-btn active" data-target="paneAkademik">Nilai Akademik</button>
+    <button class="tab-btn" data-target="paneTahfizh">Setoran Tahfizh</button>
+    <button class="tab-btn" data-target="paneKehadiran">Kehadiran</button>
+    <button class="tab-btn" data-target="paneAdab">Catatan Adab</button>
+  </div>
+
+  <!-- Pane 1: Akademik -->
+  <div id="paneAkademik" class="card tab-pane">
+    <div class="card-title">Riwayat Nilai Harian Akademik</div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu Input</th>
+            <th>Mata Pelajaran</th>
+            <th>Materi</th>
+            <th>Jenis Penilaian</th>
+            <th>Nilai</th>
+            <th>Catatan Guru</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyAkademik"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pane 2: Tahfizh -->
+  <div id="paneTahfizh" class="card tab-pane hidden">
+    <div class="card-title">Riwayat Capaian & Setoran Tahfizh</div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu Input</th>
+            <th>Pekan Ke</th>
+            <th>Capaian (Surat/Ayat)</th>
+            <th>Catatan Guru</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyTahfizh"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pane 3: Kehadiran -->
+  <div id="paneKehadiran" class="card tab-pane hidden">
+    <div class="card-title">Riwayat Kehadiran Siswa</div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Waktu Input</th>
+            <th>Pekan Ke</th>
+            <th>Sakit</th>
+            <th>Izin</th>
+            <th>Alpa</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyKehadiran"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pane 4: Adab -->
+  <div id="paneAdab" class="card tab-pane hidden">
+    <div class="card-title">Catatan Adab & Pembinaan Karakter</div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Kategori</th>
+            <th>Catatan Perilaku</th>
+            <th>Guru Pelapor</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyAdab"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<div class="watermark">Developed by Khairia Harli 2026</div>
 </body>
 </html>

@@ -8,11 +8,11 @@
 </head>
 <body>
 
- <nav class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
+<nav class="navbar" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px;">
   <!-- Bagian Kiri: Logo dan Judul -->
   <div style="display: flex; align-items: center;">
     <img src="Logo SMPIT PNG.png" alt="Logo SMPIT" style="height: 45px; margin-right: 15px;">
-    <h1 style="margin: 0; font-size: 20px; color: white;">Portal Guru dan Asatidz - SMPIT Sabilul Haq - EduSync</h1>
+    <h1 style="margin: 0; font-size: 20px; color: white;">Portal Guru - SMPIT Sabilul Haq - EduSync</h1>
   </div>
 
   <!-- Bagian Kanan: Tombol Keluar / Logout -->
@@ -26,257 +26,184 @@
 <!-- Sapaan Personal Guru -->
 <div style="padding: 20px 20px 0 20px; text-align: center;">
   <h3 style="color: var(--primary); margin: 0;">
-    Selamat Datang, <span id="namaGuruHeader"></span>
+    Selamat Datang, Ustadz/Ustadzah <span id="sapaanNamaGuru"></span>
   </h3>
 </div>
 
-<!-- Tombol & Kotak Form Ganti Password Guru -->
-<div style="text-align: right; margin-bottom: 15px; padding: 0 20px;">
-  <button onclick="document.getElementById('formGantiPassGuru').style.display='block'" style="background: var(--muted); color: white; padding: 6px 12px; border-radius: 5px; font-size: 12px; border: none; cursor: pointer;">Ubah Password</button>
-</div>
-
-<div id="formGantiPassGuru" style="display: none; background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid var(--border); margin: 0 20px;">
-  <h4 style="margin-top: 0; color: var(--text);">Ganti Password</h4>
-  <input type="password" id="oldPassGuru" placeholder="Password Lama" style="width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
-  <input type="password" id="newPassGuru" placeholder="Password Baru" style="width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
-  <button onclick="ubahPasswordGuru(this)" style="background: var(--success); color: white; padding: 8px 15px; width: 100%; border: none; border-radius: 4px; cursor: pointer;">Simpan Password Baru</button>
-  <button onclick="document.getElementById('formGantiPassGuru').style.display='none'" style="background: transparent; color: var(--danger); padding: 8px 15px; width: 100%; border: none; margin-top: 5px; cursor: pointer;">Batal</button>
-</div>
-
-  <div id="guruDashboard" class="container">
-<!-- Kotak Papan Pengumuman -->
-<div id="pengumumanBoard" style="display: none; background: #ffffff; border-left: 4px solid var(--secondary); padding: 15px; margin-bottom: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-  <h4 style="margin-top: 0; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center;">
-    <span style="margin-right: 8px;">📢</span> Info Sekolah
-  </h4>
-  <ul id="listPengumuman" style="margin: 0; padding-left: 20px; color: var(--text); font-size: 14px; line-height: 1.6;">
-    <!-- Daftar pengumuman akan dimuat di sini oleh JS -->
-  </ul>
-</div>
-    <div id="loadingGuru" class="alert alert-info">Mengambil data penugasan mengajar dan daftar siswa...</div>
-
-    <!-- Menu Tab Form Guru -->
-    <div class="tabs">
-      <button class="tab-btn active" data-target="tabMapelUmum">Input Nilai Mapel</button>
-      <button class="tab-btn" data-target="tabTahfizh">Input Setoran Tahfizh</button>
-      <button class="tab-btn" data-target="tabKehadiran">Input Kehadiran</button>
-      <button class="tab-btn" data-target="tabAdab">Input Catatan Adab</button>
-    </div>
-
-    <!-- 1. SMART FORM MAPEL UMUM -->
-    <div id="tabMapelUmum" class="card tab-pane">
-      <div class="card-title">Form Penilaian Mata Pelajaran Umum</div>
-      <div id="infoNoMapel" class="alert alert-warning hidden">
-        Anda tidak memiliki penugasan Mata Pelajaran Umum pada tabel Penugasan.
-      </div>
-
-      <form id="formInputAkademik">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="selectMapelUmum">Mata Pelajaran (Sesuai Penugasan)</label>
-            <select id="selectMapelUmum" class="form-control" required></select>
-          </div>
-          <div class="form-group">
-            <label for="selectKelasReguler">Kelas Reguler (Putra/Putri)</label>
-            <select id="selectKelasReguler" class="form-control" required>
-              <option value="">-- Pilih Mapel Terlebih Dahulu --</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="selectSiswaMapel">Nama Siswa (Terfilter Otomatis per Kelas Reguler)</label>
-          <select id="selectSiswaMapel" class="form-control" required>
-            <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
-          </select>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="jenisPenilaian">Jenis Penilaian</label>
-            <select id="jenisPenilaian" class="form-control" required>
-              <option value="Tugas Harian">Tugas Harian</option>
-              <option value="Ulangan Harian (UH)">Ulangan Harian (UH)</option>
-              <option value="Praktik / Proyek">Praktik / Proyek</option>
-              <option value="PTS">PTS</option>
-              <option value="PAS">PAS</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="semesterAkademik">Semester</label>
-            <select id="semesterAkademik" class="form-control" required>
-              <option value="Ganjil">Ganjil</option>
-              <option value="Genap">Genap</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="nilaiAkademik">Nilai (0 - 100)</label>
-          <input type="number" id="nilaiAkademik" class="form-control" min="0" max="100" placeholder="Contoh: 88" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan Nilai Akademik</button>
-      </form>
-    </div>
-
-    <!-- 2. SMART FORM TAHFIZH (LINTAS KELAS) -->
-    <div id="tabTahfizh" class="card tab-pane hidden">
-      <div class="card-title">Form Setoran Halaqah Tahfizh</div>
-      <div id="infoNoTahfizh" class="alert alert-warning hidden">
-        Anda tidak memiliki penugasan mengampu Kelompok Halaqah Tahfizh.
-      </div>
-
-      <form id="formInputTahfizh">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="tanggalTahfizh">Tanggal Setoran</label>
-            <input type="date" id="tanggalTahfizh" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="selectKelompokTahfizh">Kelompok Halaqah (Sesuai Penugasan)</label>
-            <select id="selectKelompokTahfizh" class="form-control" required></select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="selectSiswaTahfizh">Nama Siswa (Terfilter Otomatis per Kelompok Halaqah)</label>
-          <select id="selectSiswaTahfizh" class="form-control" required>
-            <option value="">-- Pilih Kelompok Halaqah Terlebih Dahulu --</option>
-          </select>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="jenisSetoran">Jenis Setoran</label>
-            <select id="jenisSetoran" class="form-control" required>
-              <option value="Ziyadah (Hafalan Baru)">Ziyadah (Hafalan Baru)</option>
-              <option value="Murajaah (Mengulang)">Murajaah (Mengulang)</option>
-              <option value="Tasmi' / Ujian Juz">Tasmi' / Ujian Juz</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="predikatTahfizh">Predikat Kelancaran</label>
-            <select id="predikatTahfizh" class="form-control" required>
-              <option value="Mumtaz (Istimewa)">Mumtaz (Istimewa)</option>
-              <option value="Jayyid Jiddan (Sangat Baik)">Jayyid Jiddan (Sangat Baik)</option>
-              <option value="Jayyid (Baik)">Jayyid (Baik)</option>
-              <option value="Maqbul (Ulang)">Maqbul (Perlu Mengulang)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="surahTahfizh">Nama Surah</label>
-            <input type="text" id="surahTahfizh" class="form-control" placeholder="Contoh: An-Naba'" required>
-          </div>
-          <div class="form-group">
-            <label for="ayatTahfizh">Rentang Ayat</label>
-            <input type="text" id="ayatTahfizh" class="form-control" placeholder="Contoh: 1 - 20" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="catatanGuruTahfizh">Catatan Guru / Evaluasi Tajwid & Makhraj (Opsional)</label>
-          <textarea id="catatanGuruTahfizh" class="form-control" rows="3" placeholder="Tulis evaluasi makhraj, mad, atau motivasi untuk santri..."></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan Setoran Tahfizh</button>
-      </form>
-    </div>
-
-    <!-- 3. FORM INPUT KEHADIRAN -->
-    <div id="tabKehadiran" class="card tab-pane hidden">
-      <div class="card-title">Form Input Kehadiran Harian</div>
-      <form id="formInputKehadiran">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="tanggalHadir">Tanggal</label>
-            <input type="date" id="tanggalHadir" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="selectKelasHadir">Pilih Kelas Reguler</label>
-            <select id="selectKelasHadir" class="form-control" required>
-              <option value="">-- Pilih Kelas --</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="selectSiswaHadir">Nama Siswa</label>
-            <select id="selectSiswaHadir" class="form-control" required>
-              <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="statusHadir">Status Kehadiran</label>
-            <select id="statusHadir" class="form-control" required>
-              <option value="Hadir">Hadir</option>
-              <option value="Sakit">Sakit</option>
-              <option value="Izin">Izin</option>
-              <option value="Alpa">Alpa</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="keteranganHadir">Keterangan Tambahan</label>
-          <input type="text" id="keteranganHadir" class="form-control" placeholder="Opsional (misal: Surat dokter menyusul)">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan Kehadiran</button>
-      </form>
-    </div>
-
-    <!-- 4. FORM INPUT ADAB -->
-    <div id="tabAdab" class="card tab-pane hidden">
-      <div class="card-title">Form Catatan Adab & Perilaku Santri</div>
-      <form id="formInputAdab">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="tanggalAdab">Tanggal Kejadian / Pengamatan</label>
-            <input type="date" id="tanggalAdab" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label for="selectKelasAdab">Pilih Kelas Reguler</label>
-            <select id="selectKelasAdab" class="form-control" required>
-              <option value="">-- Pilih Kelas --</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="selectSiswaAdab">Nama Siswa</label>
-            <select id="selectSiswaAdab" class="form-control" required>
-              <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="kategoriAdab">Kategori Adab</label>
-            <select id="kategoriAdab" class="form-control" required>
-              <option value="Apresiasi / Teladan Baik">Apresiasi / Teladan Baik</option>
-              <option value="Adab Ibadah & Masjid">Adab Ibadah & Masjid</option>
-              <option value="Kedisiplinan">Kedisiplinan</option>
-              <option value="Adab Pergaulan / Lisan">Adab Pergaulan / Lisan</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="catatanAdab">Deskripsi Catatan Perilaku</label>
-          <textarea id="catatanAdab" class="form-control" rows="3" placeholder="Tuliskan catatan apresiasi atau pembinaan adab siswa..." required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Simpan Catatan Adab</button>
-      </form>
-    </div>
-
+<div id="guruDashboard" class="container">
+  
+  <!-- Navigasi Tab -->
+  <div class="tabs">
+    <button class="tab-btn active" data-target="paneInputAkademik">Input Akademik</button>
+    <button class="tab-btn" data-target="paneInputTahfizh">Input Tahfizh</button>
+    <button class="tab-btn" data-target="paneInputKehadiran">Input Kehadiran</button>
+    <button class="tab-btn" data-target="paneInputAdab">Input Adab</button>
+    <!-- INI TOMBOL BARU UNTUK RIWAYAT -->
+    <button class="tab-btn" data-target="paneRiwayat" id="btnTabRiwayat">Riwayat Input</button>
   </div>
 
-  <script src="script.js"></script>
-  <div class="watermark">Developed by Khairia Harli 2026</div>
+  <!-- PANE 1: FORM INPUT AKADEMIK -->
+  <div id="paneInputAkademik" class="card tab-pane">
+    <div class="card-title">Form Input Nilai Harian Akademik</div>
+    <form id="formAkademik" style="display: flex; flex-direction: column; gap: 10px;">
+      <label>Nama Siswa:</label>
+      <select id="akademikSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      
+      <label>Mata Pelajaran:</label>
+      <select id="akademikMapel" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Mata Pelajaran --</option></select>
+      
+      <label>Materi Pembelajaran:</label>
+      <input type="text" id="akademikMateri" required placeholder="Contoh: Bilangan Berpangkat" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+
+      <label>Jenis Penilaian:</label>
+      <select id="akademikJenis" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <option value="">-- Pilih Jenis --</option>
+        <option value="Formatif">Formatif (Tugas/Latihan)</option>
+        <option value="Sumatif">Sumatif (Ujian Harian)</option>
+      </select>
+      
+      <label>Nilai (0-100):</label>
+      <input type="number" id="akademikNilai" required min="0" max="100" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Semester:</label>
+      <select id="akademikSemester" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <option value="Ganjil">Ganjil</option>
+        <option value="Genap">Genap</option>
+      </select>
+
+      <label>Catatan Guru (Opsional):</label>
+      <input type="text" id="akademikCatatan" placeholder="Ketik catatan di sini..." style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <button type="submit" style="background-color: var(--primary); color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Simpan Nilai</button>
+    </form>
+  </div>
+
+  <!-- PANE 2: FORM INPUT TAHFIZH -->
+  <div id="paneInputTahfizh" class="card tab-pane hidden">
+    <div class="card-title">Form Input Setoran Tahfizh</div>
+    <form id="formTahfizh" style="display: flex; flex-direction: column; gap: 10px;">
+      <label>Nama Siswa:</label>
+      <select id="tahfizhSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      
+      <label>Pekan Ke (Angka):</label>
+      <input type="number" id="tahfizhPekan" required min="1" placeholder="Contoh: 1" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Capaian (Surah & Ayat):</label>
+      <input type="text" id="tahfizhCapaian" required placeholder="Contoh: Al-Baqarah 1-5" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Catatan / Predikat:</label>
+      <input type="text" id="tahfizhCatatan" required placeholder="Contoh: Mumtaz / Perlu murojaah" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <button type="submit" style="background-color: var(--primary); color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Simpan Setoran</button>
+    </form>
+  </div>
+
+  <!-- PANE 3: FORM INPUT KEHADIRAN -->
+  <div id="paneInputKehadiran" class="card tab-pane hidden">
+    <div class="card-title">Form Rekap Kehadiran Mingguan</div>
+    <form id="formKehadiran" style="display: flex; flex-direction: column; gap: 10px;">
+      <label>Nama Siswa:</label>
+      <select id="kehadiranSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      
+      <label>Pekan Ke (Angka):</label>
+      <input type="number" id="kehadiranPekan" required min="1" placeholder="Contoh: 1" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Jumlah Sakit (Hari):</label>
+      <input type="number" id="kehadiranSakit" required min="0" value="0" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Jumlah Izin (Hari):</label>
+      <input type="number" id="kehadiranIzin" required min="0" value="0" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Jumlah Alpa (Hari):</label>
+      <input type="number" id="kehadiranAlpa" required min="0" value="0" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <button type="submit" style="background-color: var(--primary); color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Simpan Kehadiran</button>
+    </form>
+  </div>
+
+  <!-- PANE 4: FORM INPUT ADAB -->
+  <div id="paneInputAdab" class="card tab-pane hidden">
+    <div class="card-title">Form Catatan Adab & Pembinaan</div>
+    <form id="formAdab" style="display: flex; flex-direction: column; gap: 10px;">
+      <label>Tanggal Kejadian:</label>
+      <input type="date" id="adabTanggal" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <label>Nama Siswa:</label>
+      <select id="adabSiswa" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;"><option value="">-- Pilih Siswa --</option></select>
+      
+      <label>Kategori:</label>
+      <select id="adabKategori" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+        <option value="">-- Pilih Kategori --</option>
+        <option value="Positif (Apresiasi)">Positif (Apresiasi)</option>
+        <option value="Negatif (Pelanggaran)">Negatif (Pelanggaran)</option>
+      </select>
+      
+      <label>Catatan Perilaku Singkat:</label>
+      <input type="text" id="adabCatatan" required placeholder="Contoh: Membantu teman merapikan kelas" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+      
+      <button type="submit" style="background-color: var(--primary); color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Simpan Catatan Adab</button>
+    </form>
+  </div>
+
+  <!-- PANE 5: RIWAYAT INPUT (BARU) -->
+  <div id="paneRiwayat" class="card tab-pane hidden">
+    <div class="card-title" style="border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px;">Riwayat Input Data Anda</div>
+    
+    <h4 style="margin-top: 20px; color: #d35400;">1. Nilai Harian Akademik</h4>
+    <div class="table-responsive">
+      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead style="background-color: #f4f4f4;">
+          <tr>
+            <th style="padding: 8px;">Waktu Input</th>
+            <th style="padding: 8px;">Siswa</th>
+            <th style="padding: 8px;">Materi</th>
+            <th style="padding: 8px;">Nilai</th>
+          </tr>
+        </thead>
+        <tbody id="tabelRiwayatAkademikGuru">
+          <tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 style="margin-top: 30px; color: #d35400;">2. Setoran Tahfizh</h4>
+    <div class="table-responsive">
+      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead style="background-color: #f4f4f4;">
+          <tr>
+            <th style="padding: 8px;">Waktu Input</th>
+            <th style="padding: 8px;">Siswa</th>
+            <th style="padding: 8px;">Surat & Ayat</th>
+            <th style="padding: 8px;">Predikat</th>
+          </tr>
+        </thead>
+        <tbody id="tabelRiwayatTahfizhGuru">
+          <tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 style="margin-top: 30px; color: #d35400;">3. Catatan Adab</h4>
+    <div class="table-responsive">
+      <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead style="background-color: #f4f4f4;">
+          <tr>
+            <th style="padding: 8px;">Waktu Input</th>
+            <th style="padding: 8px;">Siswa</th>
+            <th style="padding: 8px;">Perilaku</th>
+            <th style="padding: 8px;">Kategori</th>
+          </tr>
+        </thead>
+        <tbody id="tabelRiwayatAdabGuru">
+          <tr><td colspan="4" style="text-align: center; padding: 10px;">Belum ditarik...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+<div class="watermark">Developed by Khairia Harli 2026</div>
 </body>
 </html>
