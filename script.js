@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       document.getElementById("sapaanNamaSiswa").innerText = loggedInOrtu.Nama_Siswa;
       fetchDashboardOrtu();
+      fetchPengumuman(); // <--- Memanggil Pengumuman untuk Ortu
     }
   }
 
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       document.getElementById("sapaanNamaGuru").innerText = loggedInGuru.Nama_Guru;
       fetchInitDataGuru();
+      fetchPengumuman(); // <--- Memanggil Pengumuman untuk Guru
       
       const btnRiwayat = document.getElementById("btnTabRiwayat");
       if (btnRiwayat) {
@@ -449,4 +451,36 @@ function setupTabs() {
       }
     });
   });
+}
+
+/* ==================== FUNGSI PENGUMUMAN ==================== */
+async function fetchPengumuman() {
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "getPengumuman" })
+    });
+    const res = await response.json();
+    
+    if (res.status === "success" && res.data.length > 0) {
+      renderPengumuman(res.data);
+    }
+  } catch (err) {
+    console.error("Gagal memuat pengumuman:", err);
+  }
+}
+
+function renderPengumuman(dataPengumuman) {
+  const board = document.getElementById("pengumumanBoard");
+  const list = document.getElementById("listPengumuman");
+  
+  if (board && list) {
+    list.innerHTML = "";
+    dataPengumuman.forEach(item => {
+      list.innerHTML += `<li style="margin-bottom: 8px;">
+        <strong>${item.Tanggal || '-'}:</strong> ${item.Isi_Pengumuman || '-'}
+      </li>`;
+    });
+    board.style.display = "block"; // Munculkan kotaknya jika ada isinya
+  }
 }
