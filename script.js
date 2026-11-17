@@ -5,7 +5,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx-0mPTIgUOcIJockj26TN3
 
 let loggedInOrtu = JSON.parse(localStorage.getItem("loggedInOrtu"));
 let loggedInGuru = JSON.parse(localStorage.getItem("loggedInGuru"));
-window.dataSiswaGlobal = []; // Memori untuk filter kelas
+window.dataSiswaGlobal = []; 
 
 document.addEventListener("DOMContentLoaded", () => {
   setupTabs();
@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFormSubmits(); 
   }
 
-  // Dasbor Ortu
   if (document.getElementById("ortuDashboard")) {
     if (!loggedInOrtu) {
       window.location.href = "index.html"; 
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Dasbor Guru
   if (document.getElementById("guruDashboard")) {
     if (!loggedInGuru) {
       window.location.href = "index.html";
@@ -33,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("sapaanNamaGuru").innerText = loggedInGuru.Nama_Guru;
       fetchInitDataGuru();
       fetchPengumuman();
-      setupFilterSiswa(); // Mengaktifkan Filter Kelas Pintar
+      setupFilterSiswa(); 
       
       const btnRiwayat = document.getElementById("btnTabRiwayat");
       if (btnRiwayat) {
@@ -185,7 +183,7 @@ async function fetchInitDataGuru() {
     });
     const res = await response.json();
     if (res.status === "success") {
-      window.dataSiswaGlobal = res.siswaList; // Simpan daftar siswa
+      window.dataSiswaGlobal = res.siswaList; 
       populateGuruDropdowns(res.penugasan);
     }
   } catch (err) {
@@ -203,26 +201,53 @@ function populateGuruDropdowns(penugasan) {
     });
   }
 
-  // 2. Kumpulkan Kelas Unik dari Database
-  const kelasUnik = [...new Set(window.dataSiswaGlobal.map(s => s.Kelas_Reguler))].filter(Boolean).sort();
-  const halaqahUnik = [...new Set(window.dataSiswaGlobal.map(s => s.Kelompok_Tahfizh))].filter(Boolean).sort();
+  // 2. Kumpulkan HANYA Kelas/Halaqah yang diampu guru yang login
+  const kelasDiampu = [...new Set(penugasan.mapelUmum.map(p => p.kelas))].filter(Boolean).sort();
+  const halaqahDiampu = penugasan.kelompokTahfizh || [];
+  
+  // 3. Kelas Global (Khusus form Adab)
+  const semuaKelas = [...new Set(window.dataSiswaGlobal.map(s => s.Kelas_Reguler))].filter(Boolean).sort();
 
-  // 3. Masukkan ke dropdown filter Kelas
-  ["akademikKelas", "kehadiranKelas", "adabKelas"].forEach(id => {
+  // 4. Kunci Akademik & Kehadiran (Hanya kelas yang diampu)
+  ["akademikKelas", "kehadiranKelas"].forEach(id => {
     const sel = document.getElementById(id);
     if (sel) {
-      sel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-      kelasUnik.forEach(k => sel.innerHTML += `<option value="${k}">${k}</option>`);
+      if (kelasDiampu.length === 0) {
+        sel.innerHTML = '<option value="">-- Tidak ada jam mengajar --</option>';
+        sel.disabled = true;
+      } else {
+        sel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        kelasDiampu.forEach(k => sel.innerHTML += `<option value="${k}">${k}</option>`);
+        sel.disabled = false;
+      }
     }
   });
 
-  const selTahfizh = document.getElementById("tahfizhKelas");
-  if (selTahfizh) {
-    selTahfizh.innerHTML = '<option value="">-- Pilih Kelompok Tahfizh --</option>';
-    halaqahUnik.forEach(h => selTahfizh.innerHTML += `<option value="${h}">${h}</option>`);
+  // 5. Bebaskan Adab (Semua kelas tampil)
+  const selAdab = document.getElementById("adabKelas");
+  if (selAdab) {
+    selAdab.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+    semuaKelas.forEach(k => selAdab.innerHTML += `<option value="${k}">${k}</option>`);
   }
 
-  // 4. Kosongkan kotak siswa awal
+  // 6. Kunci Form Tahfizh (Kunci dropdown dan matikan tombol simpannya)
+  const selTahfizh = document.getElementById("tahfizhKelas");
+  const btnSubmitTahfizh = document.querySelector("#formTahfizh button[type='submit']");
+  
+  if (selTahfizh) {
+    if (halaqahDiampu.length === 0) {
+      selTahfizh.innerHTML = '<option value="">-- Anda tidak mengampu Tahfizh --</option>';
+      selTahfizh.disabled = true;
+      if (btnSubmitTahfizh) btnSubmitTahfizh.disabled = true; 
+    } else {
+      selTahfizh.innerHTML = '<option value="">-- Pilih Kelompok --</option>';
+      halaqahDiampu.forEach(h => selTahfizh.innerHTML += `<option value="${h}">${h}</option>`);
+      selTahfizh.disabled = false;
+      if (btnSubmitTahfizh) btnSubmitTahfizh.disabled = false;
+    }
+  }
+
+  // 7. Kosongkan kotak siswa di awal
   ["akademikSiswa", "tahfizhSiswa", "kehadiranSiswa", "adabSiswa"].forEach(id => {
     const sel = document.getElementById(id);
     if (sel) sel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
@@ -254,7 +279,6 @@ function setupFilterSiswa() {
     }
   };
 
-  // Terapkan filter ke 4 formulir
   applyFilter("akademikKelas", "akademikSiswa", false);
   applyFilter("kehadiranKelas", "kehadiranSiswa", false);
   applyFilter("adabKelas", "adabSiswa", false);
@@ -346,7 +370,6 @@ async function sendDataForm(payload, formId) {
     alert(res.message);
     if (res.status === "success") {
       document.getElementById(formId).reset();
-      // Kembalikan kotak siswa jadi kosong lagi setelah sukses input
       const selects = document.querySelectorAll(`#${formId} select`);
       selects.forEach(sel => { if(sel.id.includes("Siswa")) sel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>'; });
     }
