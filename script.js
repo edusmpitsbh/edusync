@@ -39,6 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
+  // Pemicu tombol Reset Password di halaman depan
+  const btnReset = document.querySelector("#formResetPassword button");
+  if (btnReset) {
+    btnReset.addEventListener("click", window.submitResetPassword);
+  }
 });
 
 function logout() {
@@ -69,7 +75,11 @@ async function fetchPengumuman() {
   } catch (err) {}
 }
 
-/* ==================== FUNGSI LOGIN ==================== */
+/* ==================== FUNGSI LOGIN & RESET PASSWORD ==================== */
+let tempUserType = ""; 
+let tempUserId = ""; 
+let tempOldPass = "";
+
 window.loginOrtu = async function() {
   const nisn = document.getElementById("ortuNisn").value; 
   const password = document.getElementById("ortuPassword").value; 
@@ -86,8 +96,15 @@ window.loginOrtu = async function() {
     });
     const res = await response.json();
     if (res.status === "success") {
-      localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
-      window.location.href = "ortu.html"; 
+      // CEK APAKAH PASSWORD BAWAAN
+      if (res.isDefaultPassword) {
+        tempUserType = "ortu"; tempUserId = nisn; tempOldPass = password;
+        document.getElementById("boxLoginMain").style.display = "none";
+        document.getElementById("boxResetPassword").style.display = "block";
+      } else {
+        localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
+        window.location.href = "ortu.html"; 
+      }
     } else { alert(res.message); }
   } catch (err) { alert("Gagal terhubung ke server."); } 
   finally { btn.innerText = originalText; btn.disabled = false; }
@@ -109,11 +126,56 @@ window.loginGuru = async function() {
     });
     const res = await response.json();
     if (res.status === "success") {
-      localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
-      window.location.href = "guru.html"; 
+      // CEK APAKAH PASSWORD BAWAAN
+      if (res.isDefaultPassword) {
+        tempUserType = "guru"; tempUserId = niy; tempOldPass = password;
+        document.getElementById("boxLoginMain").style.display = "none";
+        document.getElementById("boxResetPassword").style.display = "block";
+      } else {
+        localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
+        window.location.href = "guru.html"; 
+      }
     } else { alert(res.message); }
   } catch (err) { alert("Gagal terhubung ke server."); } 
   finally { btn.innerText = originalText; btn.disabled = false; }
+};
+
+window.submitResetPassword = async function() {
+  const newPass = document.getElementById("newPassword").value;
+  const confirmPass = document.getElementById("confirmPassword").value;
+
+  if (!newPass || newPass.length < 6) {
+    alert("Password baru minimal 6 karakter!"); return;
+  }
+  if (newPass !== confirmPass) {
+    alert("Password baru dan konfirmasi tidak sama!"); return;
+  }
+  
+  const btn = document.querySelector("#formResetPassword button");
+  btn.innerText = "Menyimpan..."; btn.disabled = true;
+
+  const payload = {
+    action: tempUserType === "ortu" ? "changePasswordOrtu" : "changePasswordGuru",
+    oldPassword: tempOldPass,
+    newPassword: newPass
+  };
+  if (tempUserType === "ortu") payload.nisn = tempUserId;
+  if (tempUserType === "guru") payload.niy = tempUserId;
+
+  try {
+    const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+    const res = await response.json();
+    if (res.status === "success") {
+      alert("Alhamdulillah, password berhasil diperbarui! Silakan login kembali dengan password baru Anda.");
+      window.location.reload(); 
+    } else {
+      alert(res.message);
+    }
+  } catch (err) {
+    alert("Terjadi kesalahan saat menyimpan password.");
+  } finally {
+    btn.innerText = "Simpan & Lanjutkan ke Dasbor"; btn.disabled = false;
+  }
 };
 
 /* ==================== FUNGSI DASBOR WALI MURID ==================== */
@@ -192,7 +254,6 @@ async function fetchInitDataGuru() {
 }
 
 function populateGuruDropdowns(penugasan) {
-  // 1. Mapel
   const selMapel = document.getElementById("akademikMapel");
   if (selMapel) {
     selMapel.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
@@ -201,14 +262,10 @@ function populateGuruDropdowns(penugasan) {
     });
   }
 
-  // 2. Kumpulkan HANYA Kelas/Halaqah yang diampu guru yang login
   const kelasDiampu = [...new Set(penugasan.mapelUmum.map(p => p.kelas))].filter(Boolean).sort();
   const halaqahDiampu = penugasan.kelompokTahfizh || [];
-  
-  // 3. Kelas Global (Khusus form Adab)
   const semuaKelas = [...new Set(window.dataSiswaGlobal.map(s => s.Kelas_Reguler))].filter(Boolean).sort();
 
-  // 4. Kunci Akademik & Kehadiran (Hanya kelas yang diampu)
   ["akademikKelas", "kehadiranKelas"].forEach(id => {
     const sel = document.getElementById(id);
     if (sel) {
@@ -223,14 +280,12 @@ function populateGuruDropdowns(penugasan) {
     }
   });
 
-  // 5. Bebaskan Adab (Semua kelas tampil)
   const selAdab = document.getElementById("adabKelas");
   if (selAdab) {
     selAdab.innerHTML = '<option value="">-- Pilih Kelas --</option>';
     semuaKelas.forEach(k => selAdab.innerHTML += `<option value="${k}">${k}</option>`);
   }
 
-  // 6. Kunci Form Tahfizh (Kunci dropdown dan matikan tombol simpannya)
   const selTahfizh = document.getElementById("tahfizhKelas");
   const btnSubmitTahfizh = document.querySelector("#formTahfizh button[type='submit']");
   
@@ -247,7 +302,6 @@ function populateGuruDropdowns(penugasan) {
     }
   }
 
-  // 7. Kosongkan kotak siswa di awal
   ["akademikSiswa", "tahfizhSiswa", "kehadiranSiswa", "adabSiswa"].forEach(id => {
     const sel = document.getElementById(id);
     if (sel) sel.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
@@ -267,18 +321,15 @@ function setupFilterSiswa() {
           selSiswa.innerHTML = '<option value="">-- Pilih Kelas Terlebih Dahulu --</option>';
           return;
         }
-
         const filtered = window.dataSiswaGlobal.filter(s => 
           isTahfizh ? s.Kelompok_Tahfizh === val : s.Kelas_Reguler === val
         );
-
         filtered.forEach(s => {
           selSiswa.innerHTML += `<option value="${s.NISN}">${s.Nama_Siswa}</option>`;
         });
       });
     }
   };
-
   applyFilter("akademikKelas", "akademikSiswa", false);
   applyFilter("kehadiranKelas", "kehadiranSiswa", false);
   applyFilter("adabKelas", "adabSiswa", false);
