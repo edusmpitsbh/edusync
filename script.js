@@ -402,3 +402,72 @@ function setupTabs() {
     });
   });
 }
+
+/* ====================================================
+   FUNGSI LOGIN (HALAMAN AWAL)
+==================================================== */
+// 1. Pemicu Form Login Wali Murid
+const formLoginOrtu = document.getElementById("formLoginOrtu");
+if (formLoginOrtu) {
+  formLoginOrtu.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nisn = document.getElementById("nisn").value;
+    const password = document.getElementById("password").value;
+    const btn = formLoginOrtu.querySelector('button[type="submit"]');
+    const originalText = btn.innerText;
+    btn.innerText = "Memverifikasi...";
+    btn.disabled = true;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "loginOrtu", nisn: nisn, password: password })
+      });
+      const res = await response.json();
+      if (res.status === "success") {
+        localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
+        window.location.href = "ortu.html"; // Masuk ke Dasbor Ortu
+      } else {
+        alert(res.message);
+      }
+    } catch (err) {
+      alert("Gagal terhubung ke server. Pastikan koneksi internet stabil.");
+    } finally {
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
+  });
+}
+
+// 2. Pemicu Form Login Guru
+const formLoginGuru = document.getElementById("formLoginGuru");
+if (formLoginGuru) {
+  formLoginGuru.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const niy = document.getElementById("niy").value;
+    const password = document.getElementById("passwordGuru").value;
+    const btn = formLoginGuru.querySelector('button[type="submit"]');
+    const originalText = btn.innerText;
+    btn.innerText = "Memverifikasi...";
+    btn.disabled = true;
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "loginGuru", niy: niy, password: password })
+      });
+      const res = await response.json();
+      if (res.status === "success") {
+        localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
+        window.location.href = "guru.html"; // Masuk ke Dasbor Guru
+      } else {
+        alert(res.message);
+      }
+    } catch (err) {
+      alert("Gagal terhubung ke server. Pastikan koneksi internet stabil.");
+    } finally {
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
+  });
+}
