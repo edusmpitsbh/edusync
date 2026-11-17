@@ -404,70 +404,120 @@ function setupTabs() {
 }
 
 /* ====================================================
-   FUNGSI LOGIN (HALAMAN AWAL)
+   FUNGSI LOGIN (HALAMAN AWAL) - VERSI KEBAL PELURU
 ==================================================== */
-// 1. Pemicu Form Login Wali Murid
+
+// Fungsi Login Wali Murid
+window.loginOrtu = async function(e) {
+  if (e && e.preventDefault) e.preventDefault(); // Mencegah halaman reload jika pakai form
+  
+  // Deteksi inputan (mencari ID nisn dan password)
+  const inputNisn = document.getElementById("nisn");
+  const inputPass = document.getElementById("password");
+  
+  if (!inputNisn || !inputPass) {
+    alert("Sistem tidak menemukan kotak input. Pastikan ID-nya 'nisn' dan 'password' di index.html");
+    return;
+  }
+
+  const nisn = inputNisn.value;
+  const password = inputPass.value;
+
+  if (!nisn || !password) {
+    alert("NISN dan Password tidak boleh kosong!");
+    return;
+  }
+
+  // Efek tombol loading
+  const btn = document.activeElement; 
+  const originalText = btn ? btn.innerText : "Masuk";
+  if (btn && btn.tagName === "BUTTON") {
+    btn.innerText = "Memverifikasi...";
+    btn.disabled = true;
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "loginOrtu", nisn: nisn, password: password })
+    });
+    const res = await response.json();
+    if (res.status === "success") {
+      localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
+      window.location.href = "ortu.html"; // Berhasil masuk
+    } else {
+      alert(res.message);
+    }
+  } catch (err) {
+    alert("Gagal terhubung ke server. Pastikan link API_URL sudah benar.");
+  } finally {
+    if (btn && btn.tagName === "BUTTON") {
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
+  }
+};
+
+// Fungsi Login Guru
+window.loginGuru = async function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  
+  // Mencari ID niy dan password guru
+  const inputNiy = document.getElementById("niy") || document.getElementById("niyGuru");
+  const inputPass = document.getElementById("passwordGuru") || document.getElementById("password");
+  
+  if (!inputNiy || !inputPass) {
+    alert("Sistem tidak menemukan kotak input NIY/Password di index.html");
+    return;
+  }
+
+  const niy = inputNiy.value;
+  const password = inputPass.value;
+
+  if (!niy || !password) {
+    alert("NIY dan Password tidak boleh kosong!");
+    return;
+  }
+
+  const btn = document.activeElement;
+  const originalText = btn ? btn.innerText : "Masuk";
+  if (btn && btn.tagName === "BUTTON") {
+    btn.innerText = "Memverifikasi...";
+    btn.disabled = true;
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "loginGuru", niy: niy, password: password })
+    });
+    const res = await response.json();
+    if (res.status === "success") {
+      localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
+      window.location.href = "guru.html"; // Berhasil masuk
+    } else {
+      alert(res.message);
+    }
+  } catch (err) {
+    alert("Gagal terhubung ke server. Pastikan link API_URL sudah benar.");
+  } finally {
+    if (btn && btn.tagName === "BUTTON") {
+      btn.innerText = originalText;
+      btn.disabled = false;
+    }
+  }
+};
+
+// Pasang pengait otomatis jika index.html menggunakan <form id="...">
 const formLoginOrtu = document.getElementById("formLoginOrtu");
-if (formLoginOrtu) {
-  formLoginOrtu.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const nisn = document.getElementById("nisn").value;
-    const password = document.getElementById("password").value;
-    const btn = formLoginOrtu.querySelector('button[type="submit"]');
-    const originalText = btn.innerText;
-    btn.innerText = "Memverifikasi...";
-    btn.disabled = true;
+if (formLoginOrtu) formLoginOrtu.addEventListener("submit", window.loginOrtu);
 
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "loginOrtu", nisn: nisn, password: password })
-      });
-      const res = await response.json();
-      if (res.status === "success") {
-        localStorage.setItem("loggedInOrtu", JSON.stringify(res.data));
-        window.location.href = "ortu.html"; // Masuk ke Dasbor Ortu
-      } else {
-        alert(res.message);
-      }
-    } catch (err) {
-      alert("Gagal terhubung ke server. Pastikan koneksi internet stabil.");
-    } finally {
-      btn.innerText = originalText;
-      btn.disabled = false;
-    }
-  });
-}
-
-// 2. Pemicu Form Login Guru
 const formLoginGuru = document.getElementById("formLoginGuru");
-if (formLoginGuru) {
-  formLoginGuru.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const niy = document.getElementById("niy").value;
-    const password = document.getElementById("passwordGuru").value;
-    const btn = formLoginGuru.querySelector('button[type="submit"]');
-    const originalText = btn.innerText;
-    btn.innerText = "Memverifikasi...";
-    btn.disabled = true;
+if (formLoginGuru) formLoginGuru.addEventListener("submit", window.loginGuru);
 
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "loginGuru", niy: niy, password: password })
-      });
-      const res = await response.json();
-      if (res.status === "success") {
-        localStorage.setItem("loggedInGuru", JSON.stringify(res.data));
-        window.location.href = "guru.html"; // Masuk ke Dasbor Guru
-      } else {
-        alert(res.message);
-      }
-    } catch (err) {
-      alert("Gagal terhubung ke server. Pastikan koneksi internet stabil.");
-    } finally {
-      btn.innerText = originalText;
-      btn.disabled = false;
-    }
-  });
-}
+// Pasang pengait otomatis ke tombol jika id-nya spesifik
+const btnOrtu = document.getElementById("btnLoginOrtu");
+if (btnOrtu && !formLoginOrtu) btnOrtu.addEventListener("click", window.loginOrtu);
+
+const btnGuru = document.getElementById("btnLoginGuru");
+if (btnGuru && !formLoginGuru) btnGuru.addEventListener("click", window.loginGuru);
